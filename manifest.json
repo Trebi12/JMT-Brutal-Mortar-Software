@@ -1,0 +1,15 @@
+{
+  "short_name": "2. HGÚ",
+  "name": "2. HGÚ Balistický Modul",
+  "icons": [
+    {
+      "src": "ikona.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "./index.html",
+  "background_color": "#121212",
+  "theme_color": "#121212",
+  "display": "standalone"
+}
