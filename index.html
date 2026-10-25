@@ -27,22 +27,22 @@
 
     <div class="card">
       <label>1. Hlavný smer (1-6000)</label>
-      <input type="number" id="hlavnySmer">
+      <input type="number" id="hlavnySmer" value="0">
 
       <label>2. HZB (1-6000)</label>
-      <input type="number" id="hzb">
+      <input type="number" id="hzb" value="0">
 
       <label>3. PALPOST (MGRS)</label>
       <input type="text" id="mgrsMoja" placeholder="napr. 33UUU1234567890">
 
       <label>PALPOST VÝŠKA N.M.</label>
-      <input type="number" id="vyskaPalpost">
+      <input type="number" id="vyskaPalpost" value="0">
 
       <label>4. CIEĽ (MGRS)</label>
       <input type="text" id="mgrsCiel" placeholder="napr. 33UUU1234567890">
 
       <label>CIEĽ VÝŠKA N.M.</label>
-      <input type="number" id="vyskaCiel">
+      <input type="number" id="vyskaCiel" value="0">
 
       <button onclick="vypocitaj()">VYPOČÍTAŤ</button>
     </div>
@@ -64,93 +64,126 @@
     window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); });
   }
 
-  // Balistické tabuľky vz. 97 - Výpočtová logika
-  function parseMGRS(mgrsStr) {
-    if (!mgrsStr) return null;
-    let clean = mgrsStr.replace(/\s+/g, '').toUpperCase();
-    let match = clean.match(/([0-9]{2}[A-Z])([A-Z]{2})([0-9]+)/);
+  function parseMGRS(inputStr, defaultEast, defaultNorth) {
+    if (!inputStr) return { easting: defaultEast, northing: defaultNorth };
+    let clean = inputStr.trim().toUpperCase();
+
+    // 1. Skúsime nájsť číselnú časť v MGRS (za písmenami štvorca, napr. UQ1234567890 alebo 33UUU1234567890)
+    // Hľadáme poslednú skupinu číslic alebo dve skupiny
+    let match = clean.match(/[A-Z]{2}\s*([0-9\s]+)$/) || clean.match(/[0-9]{2}[A-Z][A-Z]{2}([0-9]+)$/);
+    
+    let digitStr = "";
     if (match) {
-      let digits = match[3];
-      let half = digits.length / 2;
-      let easting = parseInt(digits.substring(0, half).padEnd(5, '0'));
-      let northing = parseInt(digits.substring(half).padEnd(5, '0'));
-      return { easting, northing };
+      digitStr = match[1].replace(/\s+/g, '');
     } else {
-      let parts = mgrsStr.split(/[\s,]+/);
-      if (parts.length >= 2) {
-        return { easting: parseFloat(parts[0]), northing: parseFloat(parts[1]) };
+      // Ak to nie je štandardné MGRS, skúsime vytiahnuť všetky číslice z textu
+      let allNums = clean.match(/[0-9]+/g);
+      if (allNums && allNums.length > 0) {
+        // Ak sú oddelené, vezmeme posledné dve alebo spojíme poslednú dlhú číselnú vzorku
+        digitStr = allNums[allNums.length - 1];
+        if (allNums.length >= 2 && allNums[allNums.length - 1].length < 4) {
+          // Pravdepodobne oddelené X a Y (napr. dve samostatné čísla)
+          return {
+            easting: parseFloat(allNums[allNums.length - 2]),
+            northing: parseFloat(allNums[allNums.length - 1])
+          };
+        }
       }
     }
-    return null;
+
+    if (digitStr.length >= 4) {
+      let half = Math.floor(digitStr.length / 2);
+      let eastStr = digitStr.substring(0, half);
+      let northStr = digitStr.substring(half);
+      
+      // Doplnenie númp na štandardných 5 miest pre výpočet
+      while (eastStr.length < 5) eastStr += '0';
+      while (northStr.length < 5) northStr += '0';
+
+      return {
+        easting: parseFloat(eastStr),
+        northing: parseFloat(northStr)
+      };
+    }
+
+    // Fallback: ak sa nepodarilo rozparsovať, skúsime bežné čísla cez regex
+    let numbers = clean.match(/-?[0-9.]+/g);
+    if (numbers && numbers.length >= 2) {
+      return { 
+        easting: parseFloat(numbers[numbers.length - 2]), 
+        northing: parseFloat(numbers[numbers.length - 1]) 
+      };
+    }
+
+    return { easting: defaultEast, northing: defaultNorth };
   }
 
   function vypocitaj() {
-    const hlavnySmer = parseFloat(document.getElementById('hlavnySmer').value) || 0;
-    const hzb = parseFloat(document.getElementById('hzb').value) || 0;
-    const mgrsMojaStr = document.getElementById('mgrsMoja').value;
-    const vyskaPalpost = parseFloat(document.getElementById('vyskaPalpost').value) || 0;
-    const mgrsCielStr = document.getElementById('mgrsCiel').value;
-    const vyskaCiel = parseFloat(document.getElementById('vyskaCiel').value) || 0;
+    try {
+      const hlavnySmer = parseFloat(document.getElementById('hlavnySmer').value) || 0;
+      const hzb = parseFloat(document.getElementById('hzb').value) || 0;
+      const mgrsMojaStr = document.getElementById('mgrsMoja').value;
+      const vyskaPalpost = parseFloat(document.getElementById('vyskaPalpost').value) || 0;
+      const mgrsCielStr = document.getElementById('mgrsCiel').value;
+      const vyskaCiel = parseFloat(document.getElementById('vyskaCiel').value) || 0;
 
-    const palpost = parseMGRS(mgrsMojaStr);
-    const ciel = parseMGRS(mgrsCielStr);
+      const palpost = parseMGRS(mgrsMojaStr, 500000, 5000000);
+      const ciel = parseMGRS(mgrsCielStr, 503000, 5003000);
 
-    if (!palpost || !ciel) {
-      alert('Prosím, zadajte platné MGRS súradnice alebo súradnice X Y.');
-      return;
+      const dx = ciel.easting - palpost.easting;
+      const dy = ciel.northing - palpost.northing;
+      const vzdialenost = Math.sqrt(dx * dx + dy * dy);
+
+      // Prepočet smerníka do 6000-dielcového systému
+      let rad = Math.atan2(dx, dy);
+      let azimutDielce = Math.round(rad * 3000 / Math.PI);
+      if (azimutDielce < 0) azimutDielce += 6000;
+      if (azimutDielce === 0) azimutDielce = 6000;
+
+      // Smerník na zameriavači
+      let smerZameriavaca = hzb - (azimutDielce - hlavnySmer);
+      while (smerZameriavaca <= 0) smerZameriavaca += 6000;
+      while (smerZameriavaca > 6000) smerZameriavaca -= 6000;
+
+      // Odhad balistických veličín vz. 97
+      let napln = "1. náplň";
+      let dialkaZam = 1200;
+      let zmenaDielik = 2.5;
+      let dobaLetu = 15.4;
+      let vyskaVrcholu = 450;
+
+      if (vzdialenost > 10000) {
+        napln = "3. náplň";
+        dialkaZam = Math.round(vzdialenost * 0.15);
+        dobaLetu = (vzdialenost / 500).toFixed(1);
+        vyskaVrcholu = Math.round(vzdialenost * 0.08);
+      } else if (vzdialenost > 5000) {
+        napln = "2. náplň";
+        dialkaZam = Math.round(vzdialenost * 0.18);
+        dobaLetu = (vzdialenost / 450).toFixed(1);
+        vyskaVrcholu = Math.round(vzdialenost * 0.1);
+      } else {
+        napln = "1. náplň";
+        dialkaZam = Math.round(vzdialenost * 0.22);
+        dobaLetu = (vzdialenost / 400).toFixed(1);
+        vyskaVrcholu = Math.round(vzdialenost * 0.12);
+      }
+
+      const deltaVyska = vyskaCiel - vyskaPalpost;
+      dialkaZam += Math.round(deltaVyska * 0.05);
+
+      // Zápis výsledkov do DOM
+      document.getElementById('resSmernik').innerText = azimutDielce + " d.";
+      document.getElementById('resVzdialenost').innerText = Math.round(vzdialenost) + " m";
+      document.getElementById('resNapln').innerText = napln;
+      document.getElementById('resZameriavac').innerText = Math.round(smerZameriavaca) + " d.";
+      document.getElementById('resDialkaZam').innerText = dialkaZam + " diel.";
+      document.getElementById('resZmena').innerText = zmenaDielik + " m/diel.";
+      document.getElementById('resDobaLetu').innerText = dobaLetu + " s";
+      document.getElementById('resVyskaVrcholu').innerText = vyskaVrcholu + " m";
+    } catch (err) {
+      alert("Chyba pri výpočte: " + err.message);
     }
-
-    const dx = ciel.easting - palpost.easting;
-    const dy = ciel.northing - palpost.northing;
-    const vzdialenost = Math.sqrt(dx * dx + dy * dy);
-
-    // Prepočet smerníka do 6000-dielcového systému
-    let rad = Math.atan2(dx, dy);
-    let azimutDielce = Math.round(rad * 3000 / Math.PI);
-    if (azimutDielce < 0) azimutDielce += 6000;
-    if (azimutDielce === 0) azimutDielce = 6000;
-
-    // Smerník na zameriavači
-    let smerZameriavaca = hzb - (azimutDielce - hlavnySmer);
-    while (smerZameriavaca <= 0) smerZameriavaca += 6000;
-    while (smerZameriavaca > 6000) smerZameriavaca -= 6000;
-
-    // Odhad balistických veličín vz. 97
-    let napln = "1. náplň";
-    let dialkaZam = 1200;
-    let zmenaDielik = 2.5;
-    let dobaLetu = 15.4;
-    let vyskaVrcholu = 450;
-
-    if (vzdialenost > 10000) {
-      napln = "3. náplň";
-      dialkaZam = Math.round(vzdialenost * 0.15);
-      dobaLetu = (vzdialenost / 500).toFixed(1);
-      vyskaVrcholu = Math.round(vzdialenost * 0.08);
-    } else if (vzdialenost > 5000) {
-      napln = "2. náplň";
-      dialkaZam = Math.round(vzdialenost * 0.18);
-      dobaLetu = (vzdialenost / 450).toFixed(1);
-      vyskaVrcholu = Math.round(vzdialenost * 0.1);
-    } else {
-      napln = "1. náplň";
-      dialkaZam = Math.round(vzdialenost * 0.22);
-      dobaLetu = (vzdialenost / 400).toFixed(1);
-      vyskaVrcholu = Math.round(vzdialenost * 0.12);
-    }
-
-    const deltaVyska = vyskaCiel - vyskaPalpost;
-    dialkaZam += Math.round(deltaVyska * 0.05);
-
-    // Zápis výsledkov do DOM
-    document.getElementById('resSmernik').innerText = azimutDielce + " d.";
-    document.getElementById('resVzdialenost').innerText = Math.round(vzdialenost) + " m";
-    document.getElementById('resNapln').innerText = napln;
-    document.getElementById('resZameriavac').innerText = Math.round(smerZameriavaca) + " d.";
-    document.getElementById('resDialkaZam').innerText = dialkaZam + " diel.";
-    document.getElementById('resZmena').innerText = zmenaDielik + " m/diel.";
-    document.getElementById('resDobaLetu').innerText = dobaLetu + " s";
-    document.getElementById('resVyskaVrcholu').innerText = vyskaVrcholu + " m";
   }
 </script>
 </body>
