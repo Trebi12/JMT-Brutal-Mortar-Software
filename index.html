@@ -29,4 +29,127 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      z
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+      box-sizing: border-box;
+      padding: 20px;
+      cursor: pointer;
+    }
+    #splash img {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="splash" onclick="skrySplash()">
+    <img src="ikona.png" alt="Ikona">
+  </div>
+
+  <div class="container">
+    <h2>2. HGÚ - BALISTIKA</h2>
+
+    <div class="card">
+      <label>1. Hlavný smer (1-6000)</label>
+      <input type="number" id="hlavnySmer">
+
+      <label>2. HZB (1-6000)</label>
+      <input type="number" id="hzb">
+
+      <label>3. PALPOST (MGRS)</label>
+      <input type="text" id="mgrsMoja">
+
+      <label>PALPOST VÝŠKA N.M.</label>
+      <input type="number" id="vyskaPalpost">
+
+      <label>4. CIEĽ (MGRS)</label>
+      <input type="text" id="mgrsCiel">
+
+      <label>CIEĽ VÝŠKA N.M.</label>
+      <input type="number" id="vyskaCiel">
+
+      <button onclick="vypocitaj()">VYPOČÍTAŤ</button>
+    </div>
+
+    <div class="card">
+      <div class="row"><span>Smerník:</span><b id="resSmernik">-</b></div>
+      <div class="row"><span>Vzdialenosť:</span><b id="resVzdialenost">-</b></div>
+      <div class="row"><span>Náplň:</span><b id="resNapln">-</b></div>
+      <div class="row"><span>Smerník na zameriavači:</span><b id="resZameriavac">-</b></div>
+      <div class="row"><span>Diaľka zameriavača (Námer):</span><b id="resDiaľkaZam">-</b></div>
+      <div class="row"><span>Zmena na 1 dielik:</span><b id="resZmena">-</b></div>
+      <div class="row"><span>Doba letu (ToF):</span><b id="resDobaLetu">-</b></div>
+      <div class="row"><span>Výška vrcholu (MaxOrd):</span><b id="resVyskaVrcholu">-</b></div>
+    </div>
+  </div>
+
+<script>
+  function skrySplash() {
+    const splash = document.getElementById('splash');
+    if (splash) {
+      splash.style.opacity = '0';
+      setTimeout(() => splash.style.display = 'none', 500);
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(skrySplash, 2000);
+  });
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => { 
+      navigator.serviceWorker.register('sw.js').then(reg => { reg.update(); }); 
+    });
+  }
+
+  // Balistické tabuľky vz. 97
+  const BALISTICKE_TABULKY = {
+    "Náplň 1": [
+      {vzd: 266, zam: 333, opr: 0.3, zmena: 3.1, cas: 25.1, ypom: 800, vVrcholu: 769},
+      {vzd: 300, zam: 344, opr: 0.3, zmena: 3.1, cas: 25.0, ypom: 800, vVrcholu: 767},
+      {vzd: 400, zam: 377, opr: 0.3, zmena: 3.0, cas: 24.9, ypom: 800, vVrcholu: 759},
+      {vzd: 500, zam: 411, opr: 0.4, zmena: 2.9, cas: 24.7, ypom: 800, vVrcholu: 749},
+      {vzd: 600, zam: 445, opr: 0.6, zmena: 2.8, cas: 24.5, ypom: 800, vVrcholu: 737},
+      {vzd: 700, zam: 482, opr: 0.8, zmena: 2.6, cas: 24.3, ypom: 800, vVrcholu: 723},
+      {vzd: 800, zam: 520, opr: 1.0, zmena: 2.5, cas: 24.0, ypom: 800, vVrcholu: 706},
+      {vzd: 900, zam: 560, opr: 1.2, zmena: 2.3, cas: 23.7, ypom: 800, vVrcholu: 686},
+      {vzd: 1000, zam: 604, opr: 1.5, zmena: 2.1, cas: 23.3, ypom: 700, vVrcholu: 663},
+      {vzd: 1100, zam: 651, opr: 1.9, zmena: 1.8, cas: 22.7, ypom: 700, vVrcholu: 634},
+      {vzd: 1200, zam: 706, opr: 2.4, zmena: 1.5, cas: 22.1, ypom: 700, vVrcholu: 599},
+      {vzd: 1300, zam: 771, opr: 3.2, zmena: 1.1, cas: 21.3, ypom: 600, vVrcholu: 555},
+      {vzd: 1400, zam: 860, opr: 4.4, zmena: 0.4, cas: 20.0, ypom: 600, vVrcholu: 469},
+      {vzd: 1465, zam: 1010, opr: 36.7, zmena: 0.0, cas: 17.4, ypom: 400, vVrcholu: 372},
+      {vzd: 1449, zam: 1083, opr: 31.0, zmena: 0.2, cas: 16.0, ypom: 400, vVrcholu: 315},
+    ],
+    "Náplň 2": [
+      {vzd: 470, zam: 333, opr: 0.1, zmena: 5.5, cas: 33.6, ypom: 800, vVrcholu: 1366},
+      {vzd: 500, zam: 339, opr: 0.1, zmena: 5.5, cas: 33.6, ypom: 1500, vVrcholu: 1384},
+      {vzd: 600, zam: 357, opr: 0.2, zmena: 5.4, cas: 33.5, ypom: 1500, vVrcholu: 1377},
+      {vzd: 700, zam: 376, opr: 0.2, zmena: 5.3, cas: 33.4, ypom: 1500, vVrcholu: 1369},
+      {vzd: 800, zam: 394, opr: 0.3, zmena: 5.3, cas: 33.3, ypom: 1500, vVrcholu: 1360},
+      {vzd: 900, zam: 413, opr: 0.3, zmena: 5.1, cas: 33.2, ypom: 1400, vVrcholu: 1350},
+      {vzd: 1000, zam: 433, opr: 0.4, zmena: 5.0, cas: 33.1, ypom: 1400, vVrcholu: 1338},
+      {vzd: 1100, zam: 453, opr: 0.4, zmena: 4.9, cas: 32.9, ypom: 1400, vVrcholu: 1326},
+      {vzd: 1200, zam: 473, opr: 0.5, zmena: 4.8, cas: 32.7, ypom: 1400, vVrcholu: 1312},
+      {vzd: 1300, zam: 494, opr: 0.5, zmena: 4.6, cas: 32.5, ypom: 1400, vVrcholu: 1296},
+      {vzd: 1400, zam: 516, opr: 0.6, zmena: 4.5, cas: 32.3, ypom: 1400, vVrcholu: 1279},
+      {vzd: 1500, zam: 538, opr: 0.7, zmena: 4.3, cas: 32.1, ypom: 1300, vVrcholu: 1260},
+      {vzd: 1600, zam: 561, opr: 0.8, zmena: 4.1, cas: 31.8, ypom: 1300, vVrcholu: 1239},
+      {vzd: 1700, zam: 595, opr: 0.9, zmena: 3.9, cas: 31.5, ypom: 1300, vVrcholu: 1216},
+      {vzd: 1800, zam: 611, opr: 1.0, zmena: 3.7, cas: 31.2, ypom: 1300, vVrcholu: 1191},
+      {vzd: 1900, zam: 638, opr: 1.1, zmena: 3.5, cas: 30.8, ypom: 1200, vVrcholu: 1161},
+      {vzd: 2000, zam: 667, opr: 1.3, zmena: 3.2, cas: 30.4, ypom: 1200, vVrcholu: 1130},
+      {vzd: 2100, zam: 698, opr: 1.5, zmena: 2.9, cas: 29.9, ypom: 1200, vVrcholu: 1093},
+      {vzd: 2200, zam: 733, opr: 1.7, zmena: 2.5, cas: 29.3, ypom: 1100, vVrcholu: 1051},
+      {vzd: 2300, zam: 772, opr: 3.0, zmena: 2.1, cas: 28.6, ypom: 1100, vVrcholu: 1001},
+      {vzd: 2400, zam: 620, opr: 4.4, zmena: 1.5, cas: 27.7, ypom: 1100, vVrcholu: 938},
+      {vzd: 2500, zam: 685, opr: 8.0, zmena: 0.6, cas: 26.3, ypom: 800, vVrcholu: 847},
+      {vzd: 2570, zam: 1003, opr: 25.0, zmena: 0.0, cas: 23.6, ypom: 700, vVrcholu: 682},
+      {vzd: 2537, zam: 1083, opr: 20.0, zmena: 0.4, cas: 21.5, ypom: 600, vVrcholu: 568},
+    ],
+    "Náplň
