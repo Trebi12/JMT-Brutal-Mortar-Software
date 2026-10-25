@@ -4,20 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>2. HGÚ BALISTIKA</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="ikona.png">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#121212">
   <style>
     body { font-family: -apple-system, sans-serif; background: #121212; color: #fff; padding: 20px; margin: 0; }
-    .container { padding: 20px; max-width: 600px; margin: auto; }
+    .container { padding: 10px; max-width: 600px; margin: auto; }
     .card { background: #1e1e1e; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #333; }
-    input { width: 100%; padding: 10px; margin: 5px 0 10px 0; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 5px; box-sizing: border-box; }
-    button { width: 100%; padding: 12px; background: #2196f3; color: #fff; border: none; border-radius: 5px; font-weight: bold; font-size: 1rem; cursor: pointer; }
+    label { display: block; font-size: 0.9rem; color: #aaa; margin-top: 10px; }
+    input { width: 100%; padding: 10px; margin: 5px 0 5px 0; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 5px; box-sizing: border-box; font-size: 1rem; }
+    button { width: 100%; padding: 14px; background: #2196f3; color: #fff; border: none; border-radius: 5px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 15px; }
     button:hover { background: #1976d2; }
-    .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #333; }
+    .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #333; }
     .row:last-child { border-bottom: none; }
+    .row span { color: #aaa; }
+    .row b { color: #4caf50; }
   </style>
 </head>
 <body>
@@ -30,19 +29,19 @@
       <input type="number" id="hlavnySmer" value="0">
 
       <label>2. HZB (1-6000)</label>
-      <input type="number" id="hzb" value="0">
+      <input type="number" id="hzb" value="3000">
 
-      <label>3. PALPOST (MGRS)</label>
-      <input type="text" id="mgrsMoja" placeholder="napr. 33UUU1234567890">
+      <label>3. PALPOST (MGRS alebo X, Y)</label>
+      <input type="text" id="mgrsMoja" value="33UUU1234567890">
 
-      <label>PALPOST VÝŠKA N.M.</label>
-      <input type="number" id="vyskaPalpost" value="0">
+      <label>PALPOST VÝŠKA N.M. (m)</label>
+      <input type="number" id="vyskaPalpost" value="200">
 
-      <label>4. CIEĽ (MGRS)</label>
-      <input type="text" id="mgrsCiel" placeholder="napr. 33UUU1234567890">
+      <label>4. CIEĽ (MGRS alebo X, Y)</label>
+      <input type="text" id="mgrsCiel" value="33UUU1500065000">
 
-      <label>CIEĽ VÝŠKA N.M.</label>
-      <input type="number" id="vyskaCiel" value="0">
+      <label>CIEĽ VÝŠKA N.M. (m)</label>
+      <input type="number" id="vyskaCiel" value="350">
 
       <button onclick="vypocitaj()">VYPOČÍTAŤ</button>
     </div>
@@ -60,29 +59,21 @@
   </div>
 
 <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); });
-  }
-
   function parseMGRS(inputStr, defaultEast, defaultNorth) {
     if (!inputStr) return { easting: defaultEast, northing: defaultNorth };
     let clean = inputStr.trim().toUpperCase();
 
-    // 1. Skúsime nájsť číselnú časť v MGRS (za písmenami štvorca, napr. UQ1234567890 alebo 33UUU1234567890)
-    // Hľadáme poslednú skupinu číslic alebo dve skupiny
+    // Pokus o nájdenie číselnej časti v MGRS formáte (napr. za štvorcom)
     let match = clean.match(/[A-Z]{2}\s*([0-9\s]+)$/) || clean.match(/[0-9]{2}[A-Z][A-Z]{2}([0-9]+)$/);
     
     let digitStr = "";
     if (match) {
       digitStr = match[1].replace(/\s+/g, '');
     } else {
-      // Ak to nie je štandardné MGRS, skúsime vytiahnuť všetky číslice z textu
       let allNums = clean.match(/[0-9]+/g);
       if (allNums && allNums.length > 0) {
-        // Ak sú oddelené, vezmeme posledné dve alebo spojíme poslednú dlhú číselnú vzorku
         digitStr = allNums[allNums.length - 1];
         if (allNums.length >= 2 && allNums[allNums.length - 1].length < 4) {
-          // Pravdepodobne oddelené X a Y (napr. dve samostatné čísla)
           return {
             easting: parseFloat(allNums[allNums.length - 2]),
             northing: parseFloat(allNums[allNums.length - 1])
@@ -96,7 +87,6 @@
       let eastStr = digitStr.substring(0, half);
       let northStr = digitStr.substring(half);
       
-      // Doplnenie númp na štandardných 5 miest pre výpočet
       while (eastStr.length < 5) eastStr += '0';
       while (northStr.length < 5) northStr += '0';
 
@@ -106,7 +96,6 @@
       };
     }
 
-    // Fallback: ak sa nepodarilo rozparsovať, skúsime bežné čísla cez regex
     let numbers = clean.match(/-?[0-9.]+/g);
     if (numbers && numbers.length >= 2) {
       return { 
@@ -134,18 +123,15 @@
       const dy = ciel.northing - palpost.northing;
       const vzdialenost = Math.sqrt(dx * dx + dy * dy);
 
-      // Prepočet smerníka do 6000-dielcového systému
       let rad = Math.atan2(dx, dy);
       let azimutDielce = Math.round(rad * 3000 / Math.PI);
       if (azimutDielce < 0) azimutDielce += 6000;
       if (azimutDielce === 0) azimutDielce = 6000;
 
-      // Smerník na zameriavači
       let smerZameriavaca = hzb - (azimutDielce - hlavnySmer);
       while (smerZameriavaca <= 0) smerZameriavaca += 6000;
       while (smerZameriavaca > 6000) smerZameriavaca -= 6000;
 
-      // Odhad balistických veličín vz. 97
       let napln = "1. náplň";
       let dialkaZam = 1200;
       let zmenaDielik = 2.5;
@@ -172,7 +158,6 @@
       const deltaVyska = vyskaCiel - vyskaPalpost;
       dialkaZam += Math.round(deltaVyska * 0.05);
 
-      // Zápis výsledkov do DOM
       document.getElementById('resSmernik').innerText = azimutDielce + " d.";
       document.getElementById('resVzdialenost').innerText = Math.round(vzdialenost) + " m";
       document.getElementById('resNapln').innerText = napln;
