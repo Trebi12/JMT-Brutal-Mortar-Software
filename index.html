@@ -19,6 +19,7 @@
     .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #333; }
     .row:last-child { border-bottom: none; }
     
+    /* Úvodná obrazovka (Splash Screen) adaptívna pre celý displej */
     #splash {
       position: fixed;
       top: 0;
@@ -46,6 +47,7 @@
 </head>
 <body>
 
+  <!-- Úvodná obrazovka na 2 sekundy -->
   <div id="splash">
     <img src="ikona.png" alt="Ikona">
   </div>
@@ -87,11 +89,14 @@
   </div>
 
 <script>
+  // Schovanie úvodnej obrazovky po 2 sekundách
   window.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       const splash = document.getElementById('splash');
-      splash.style.opacity = '0';
-      setTimeout(() => splash.style.display = 'none', 500);
+      if (splash) {
+        splash.style.opacity = '0';
+        setTimeout(() => splash.style.display = 'none', 500);
+      }
     }, 2000);
   });
 
@@ -100,3 +105,435 @@
   }
 
   // Balistické tabuľky vz. 97
+  const BALISTICKE_TABULKY = {
+    "Náplň 1": [
+      {vzd: 266, zam: 333, opr: 0.3, zmena: 3.1, cas: 25.1, ypom: 800, vVrcholu: 769},
+      {vzd: 300, zam: 344, opr: 0.3, zmena: 3.1, cas: 25.0, ypom: 800, vVrcholu: 767},
+      {vzd: 400, zam: 377, opr: 0.3, zmena: 3.0, cas: 24.9, ypom: 800, vVrcholu: 759},
+      {vzd: 500, zam: 411, opr: 0.4, zmena: 2.9, cas: 24.7, ypom: 800, vVrcholu: 749},
+      {vzd: 600, zam: 445, opr: 0.6, zmena: 2.8, cas: 24.5, ypom: 800, vVrcholu: 737},
+      {vzd: 700, zam: 482, opr: 0.8, zmena: 2.6, cas: 24.3, ypom: 800, vVrcholu: 723},
+      {vzd: 800, zam: 520, opr: 1.0, zmena: 2.5, cas: 24.0, ypom: 800, vVrcholu: 706},
+      {vzd: 900, zam: 560, opr: 1.2, zmena: 2.3, cas: 23.7, ypom: 800, vVrcholu: 686},
+      {vzd: 1000, zam: 604, opr: 1.5, zmena: 2.1, cas: 23.3, ypom: 700, vVrcholu: 663},
+      {vzd: 1100, zam: 651, opr: 1.9, zmena: 1.8, cas: 22.7, ypom: 700, vVrcholu: 634},
+      {vzd: 1200, zam: 706, opr: 2.4, zmena: 1.5, cas: 22.1, ypom: 700, vVrcholu: 599},
+      {vzd: 1300, zam: 771, opr: 3.2, zmena: 1.1, cas: 21.3, ypom: 600, vVrcholu: 555},
+      {vzd: 1400, zam: 860, opr: 4.4, zmena: 0.4, cas: 20.0, ypom: 600, vVrcholu: 469},
+      {vzd: 1465, zam: 1010, opr: 36.7, zmena: 0.0, cas: 17.4, ypom: 400, vVrcholu: 372},
+      {vzd: 1449, zam: 1083, opr: 31.0, zmena: 0.2, cas: 16.0, ypom: 400, vVrcholu: 315},
+    ],
+    "Náplň 2": [
+      {vzd: 470, zam: 333, opr: 0.1, zmena: 5.5, cas: 33.6, ypom: 800, vVrcholu: 1366},
+      {vzd: 500, zam: 339, opr: 0.1, zmena: 5.5, cas: 33.6, ypom: 1500, vVrcholu: 1384},
+      {vzd: 600, zam: 357, opr: 0.2, zmena: 5.4, cas: 33.5, ypom: 1500, vVrcholu: 1377},
+      {vzd: 700, zam: 376, opr: 0.2, zmena: 5.3, cas: 33.4, ypom: 1500, vVrcholu: 1369},
+      {vzd: 800, zam: 394, opr: 0.3, zmena: 5.3, cas: 33.3, ypom: 1500, vVrcholu: 1360},
+      {vzd: 900, zam: 413, opr: 0.3, zmena: 5.1, cas: 33.2, ypom: 1400, vVrcholu: 1350},
+      {vzd: 1000, zam: 433, opr: 0.4, zmena: 5.0, cas: 33.1, ypom: 1400, vVrcholu: 1338},
+      {vzd: 1100, zam: 453, opr: 0.4, zmena: 4.9, cas: 32.9, ypom: 1400, vVrcholu: 1326},
+      {vzd: 1200, zam: 473, opr: 0.5, zmena: 4.8, cas: 32.7, ypom: 1400, vVrcholu: 1312},
+      {vzd: 1300, zam: 494, opr: 0.5, zmena: 4.6, cas: 32.5, ypom: 1400, vVrcholu: 1296},
+      {vzd: 1400, zam: 516, opr: 0.6, zmena: 4.5, cas: 32.3, ypom: 1400, vVrcholu: 1279},
+      {vzd: 1500, zam: 538, opr: 0.7, zmena: 4.3, cas: 32.1, ypom: 1300, vVrcholu: 1260},
+      {vzd: 1600, zam: 561, opr: 0.8, zmena: 4.1, cas: 31.8, ypom: 1300, vVrcholu: 1239},
+      {vzd: 1700, zam: 595, opr: 0.9, zmena: 3.9, cas: 31.5, ypom: 1300, vVrcholu: 1216},
+      {vzd: 1800, zam: 611, opr: 1.0, zmena: 3.7, cas: 31.2, ypom: 1300, vVrcholu: 1191},
+      {vzd: 1900, zam: 638, opr: 1.1, zmena: 3.5, cas: 30.8, ypom: 1200, vVrcholu: 1161},
+      {vzd: 2000, zam: 667, opr: 1.3, zmena: 3.2, cas: 30.4, ypom: 1200, vVrcholu: 1130},
+      {vzd: 2100, zam: 698, opr: 1.5, zmena: 2.9, cas: 29.9, ypom: 1200, vVrcholu: 1093},
+      {vzd: 2200, zam: 733, opr: 1.7, zmena: 2.5, cas: 29.3, ypom: 1100, vVrcholu: 1051},
+      {vzd: 2300, zam: 772, opr: 3.0, zmena: 2.1, cas: 28.6, ypom: 1100, vVrcholu: 1001},
+      {vzd: 2400, zam: 620, opr: 4.4, zmena: 1.5, cas: 27.7, ypom: 1100, vVrcholu: 938},
+      {vzd: 2500, zam: 685, opr: 8.0, zmena: 0.6, cas: 26.3, ypom: 800, vVrcholu: 847},
+      {vzd: 2570, zam: 1003, opr: 25.0, zmena: 0.0, cas: 23.6, ypom: 700, vVrcholu: 682},
+      {vzd: 2537, zam: 1083, opr: 20.0, zmena: 0.4, cas: 21.5, ypom: 600, vVrcholu: 568},
+    ],
+    "Náplň 3": [
+      {vzd: 673, zam: 333.0, opr: 0.1, zmena: 7.8, cas: 40.6, ypom: 2100.0, vVrcholu: 2016.0},
+      {vzd: 700, zam: 337.0, opr: 0.1, zmena: 7.8, cas: 40.6, ypom: 2100.0, vVrcholu: 2014.0},
+      {vzd: 800, zam: 350.0, opr: 0.1, zmena: 7.6, cas: 40.5, ypom: 2100.0, vVrcholu: 2005.0},
+      {vzd: 900, zam: 363.0, opr: 0.1, zmena: 7.6, cas: 40.4, ypom: 2100.0, vVrcholu: 1995.0},
+      {vzd: 1000, zam: 376.0, opr: 0.1, zmena: 7.5, cas: 40.3, ypom: 2100.0, vVrcholu: 1985.0},
+      {vzd: 1100, zam: 389.0, opr: 0.2, zmena: 7.4, cas: 40.1, ypom: 2100.0, vVrcholu: 1974.0},
+      {vzd: 1200, zam: 403.0, opr: 0.2, zmena: 7.3, cas: 40.0, ypom: 2000.0, vVrcholu: 1962.0},
+      {vzd: 1300, zam: 417.0, opr: 0.2, zmena: 7.1, cas: 39.9, ypom: 2000.0, vVrcholu: 1949.0},
+      {vzd: 1400, zam: 431.0, opr: 0.2, zmena: 7.0, cas: 39.8, ypom: 2000.0, vVrcholu: 1936.0},
+      {vzd: 1500, zam: 445.0, opr: 0.2, zmena: 6.9, cas: 39.6, ypom: 2000.0, vVrcholu: 1921.0},
+      {vzd: 1600, zam: 459.0, opr: 0.3, zmena: 6.7, cas: 39.4, ypom: 2000.0, vVrcholu: 1906.0},
+      {vzd: 1700, zam: 474.0, opr: 0.3, zmena: 6.6, cas: 39.3, ypom: 2000.0, vVrcholu: 1889.0},
+      {vzd: 1800, zam: 489.0, opr: 0.3, zmena: 6.5, cas: 39.1, ypom: 2000.0, vVrcholu: 1872.0},
+      {vzd: 1900, zam: 505.0, opr: 0.3, zmena: 6.3, cas: 38.9, ypom: 2000.0, vVrcholu: 1854.0},
+      {vzd: 2000, zam: 521.0, opr: 0.3, zmena: 6.1, cas: 38.7, ypom: 1900.0, vVrcholu: 1835.0},
+      {vzd: 2100, zam: 537.0, opr: 0.4, zmena: 6.0, cas: 38.5, ypom: 1900.0, vVrcholu: 1813.0},
+      {vzd: 2200, zam: 554.0, opr: 0.4, zmena: 5.8, cas: 38.2, ypom: 1900.0, vVrcholu: 1792.0},
+      {vzd: 2300, zam: 571.0, opr: 0.4, zmena: 5.6, cas: 38.0, ypom: 1900.0, vVrcholu: 1768.0},
+      {vzd: 2400, zam: 588.0, opr: 0.5, zmena: 5.5, cas: 37.7, ypom: 1800.0, vVrcholu: 1744.0},
+      {vzd: 2500, zam: 607.0, opr: 0.5, zmena: 5.3, cas: 37.4, ypom: 1800.0, vVrcholu: 1717.0},
+      {vzd: 2600, zam: 626.0, opr: 0.6, zmena: 5.1, cas: 37.1, ypom: 1800.0, vVrcholu: 1689.0},
+      {vzd: 2700, zam: 646.0, opr: 0.6, zmena: 4.9, cas: 36.8, ypom: 1800.0, vVrcholu: 1658.0},
+      {vzd: 2800, zam: 666.0, opr: 0.7, zmena: 4.6, cas: 36.4, ypom: 1700.0, vVrcholu: 1625.0},
+      {vzd: 2900, zam: 688.0, opr: 0.8, zmena: 4.4, cas: 36.0, ypom: 1700.0, vVrcholu: 1590.0},
+      {vzd: 3000, zam: 711.0, opr: 0.9, zmena: 4.1, cas: 35.6, ypom: 1700.0, vVrcholu: 1553.0},
+      {vzd: 3100, zam: 735.0, opr: 1.0, zmena: 3.8, cas: 35.1, ypom: 1600.0, vVrcholu: 1511.0},
+      {vzd: 3200, zam: 761.0, opr: 1.2, zmena: 3.5, cas: 34.6, ypom: 1600.0, vVrcholu: 1465.0},
+      {vzd: 3300, zam: 790.0, opr: 1.5, zmena: 3.2, cas: 34.0, ypom: 1500.0, vVrcholu: 1415.0},
+      {vzd: 3400, zam: 821.0, opr: 2.0, zmena: 2.8, cas: 33.3, ypom: 1500.0, vVrcholu: 1357.0},
+    ],
+    "Náplň 4": [
+      {vzd: 898, zam: 333, opr: 0.1, zmena: 10.3, cas: 46.9, ypom: 2800, vVrcholu: 2698},
+      {vzd: 900, zam: 334, opr: 0.1, zmena: 10.3, cas: 46.9, ypom: 2800, vVrcholu: 2699},
+      {vzd: 1000, zam: 343, opr: 0.1, zmena: 10.1, cas: 46.8, ypom: 2800, vVrcholu: 2687},
+      {vzd: 1100, zam: 353, opr: 0.1, zmena: 10.0, cas: 46.7, ypom: 2800, vVrcholu: 2674},
+      {vzd: 1200, zam: 363, opr: 0.1, zmena: 9.9, cas: 46.6, ypom: 2800, vVrcholu: 2662},
+      {vzd: 1300, zam: 373, opr: 0.1, zmena: 9.8, cas: 46.5, ypom: 2800, vVrcholu: 2649},
+      {vzd: 1400, zam: 383, opr: 0.2, zmena: 9.6, cas: 46.4, ypom: 2800, vVrcholu: 2636},
+      {vzd: 1500, zam: 394, opr: 0.2, zmena: 9.5, cas: 46.3, ypom: 2700, vVrcholu: 2621},
+      {vzd: 1600, zam: 404, opr: 0.2, zmena: 9.3, cas: 46.1, ypom: 2700, vVrcholu: 2606},
+      {vzd: 1700, zam: 415, opr: 0.2, zmena: 9.3, cas: 46.0, ypom: 2700, vVrcholu: 2590},
+      {vzd: 1800, zam: 426, opr: 0.2, zmena: 9.0, cas: 45.9, ypom: 2700, vVrcholu: 2574},
+      {vzd: 1900, zam: 437, opr: 0.2, zmena: 8.9, cas: 45.7, ypom: 2600, vVrcholu: 2558},
+      {vzd: 2000, zam: 448, opr: 0.2, zmena: 8.8, cas: 45.5, ypom: 2600, vVrcholu: 2540},
+      {vzd: 2100, zam: 459, opr: 0.2, zmena: 8.6, cas: 45.4, ypom: 2600, vVrcholu: 2522},
+      {vzd: 2200, zam: 471, opr: 0.2, zmena: 8.5, cas: 45.2, ypom: 2600, vVrcholu: 2503},
+      {vzd: 2300, zam: 483, opr: 0.2, zmena: 8.3, cas: 45.0, ypom: 2500, vVrcholu: 2483},
+      {vzd: 2400, zam: 495, opr: 0.2, zmena: 8.1, cas: 44.8, ypom: 2500, vVrcholu: 2462},
+      {vzd: 2500, zam: 507, opr: 0.2, zmena: 8.0, cas: 44.6, ypom: 2500, vVrcholu: 2441},
+      {vzd: 2600, zam: 520, opr: 0.2, zmena: 7.8, cas: 44.4, ypom: 2500, vVrcholu: 2419},
+      {vzd: 2700, zam: 533, opr: 0.3, zmena: 7.6, cas: 44.2, ypom: 2500, vVrcholu: 2396},
+      {vzd: 2800, zam: 546, opr: 0.3, zmena: 7.4, cas: 44.0, ypom: 2400, vVrcholu: 2371},
+      {vzd: 2900, zam: 559, opr: 0.3, zmena: 7.2, cas: 43.8, ypom: 2400, vVrcholu: 2345},
+      {vzd: 3000, zam: 573, opr: 0.4, zmena: 7.0, cas: 43.5, ypom: 2400, vVrcholu: 2318},
+      {vzd: 3100, zam: 587, opr: 0.4, zmena: 6.8, cas: 43.2, ypom: 2400, vVrcholu: 2291},
+      {vzd: 3200, zam: 602, opr: 0.4, zmena: 6.6, cas: 43.0, ypom: 2300, vVrcholu: 2261},
+      {vzd: 3300, zam: 617, opr: 0.5, zmena: 6.4, cas: 42.7, ypom: 2300, vVrcholu: 2230},
+      {vzd: 3400, zam: 633, opr: 0.6, zmena: 6.2, cas: 42.3, ypom: 2300, vVrcholu: 2198},
+      {vzd: 3500, zam: 649, opr: 0.6, zmena: 6.0, cas: 42.0, ypom: 2200, vVrcholu: 2164},
+      {vzd: 3600, zam: 666, opr: 0.7, zmena: 5.7, cas: 41.7, ypom: 2200, vVrcholu: 2126},
+      {vzd: 3700, zam: 683, opr: 0.8, zmena: 5.4, cas: 41.3, ypom: 2100, vVrcholu: 2088},
+      {vzd: 3800, zam: 702, opr: 0.9, zmena: 5.2, cas: 40.9, ypom: 2100, vVrcholu: 2048},
+      {vzd: 3900, zam: 721, opr: 1.0, zmena: 4.9, cas: 40.4, ypom: 2000, vVrcholu: 2003},
+      {vzd: 4000, zam: 741, opr: 1.1, zmena: 4.6, cas: 40.0, ypom: 2000, vVrcholu: 1957},
+      {vzd: 4100, zam: 763, opr: 1.2, zmena: 4.3, cas: 39.4, ypom: 2000, vVrcholu: 1906},
+      {vzd: 4200, zam: 786, opr: 1.3, zmena: 4.0, cas: 38.9, ypom: 1900, vVrcholu: 1852},
+      {vzd: 4300, zam: 811, opr: 1.7, zmena: 3.6, cas: 38.2, ypom: 1800, vVrcholu: 1790},
+      {vzd: 4400, zam: 840, opr: 2.3, zmena: 3.2, cas: 37.5, ypom: 1800, vVrcholu: 1723},
+      {vzd: 4500, zam: 871, opr: 3.0, zmena: 2.7, cas: 36.6, ypom: 1700, vVrcholu: 1645},
+      {vzd: 4600, zam: 908, opr: 4.2, zmena: 2.0, cas: 35.6, ypom: 1600, vVrcholu: 1552},
+      {vzd: 4700, zam: 957, opr: 6.2, zmena: 0.9, cas: 34.1, ypom: 1500, vVrcholu: 1427},
+      {vzd: 4796, zam: 1068, opr: 10.0, zmena: 0.0, cas: 30.6, ypom: 1300, vVrcholu: 1147},
+      {vzd: 4794, zam: 1083, opr: 12.1, zmena: 0.2, cas: 30.0, ypom: 1200, vVrcholu: 1106},
+    ],
+    "Náplň 5": [
+      {vzd: 1091, zam: 333, opr: 0.1, zmena: 12.5, cas: 52.1, ypom: 3500, vVrcholu: 3318},
+      {vzd: 1100, zam: 334, opr: 0.1, zmena: 12.5, cas: 52.1, ypom: 3500, vVrcholu: 3318},
+      {vzd: 1200, zam: 342, opr: 0.1, zmena: 12.3, cas: 52.0, ypom: 3400, vVrcholu: 3307},
+      {vzd: 1300, zam: 350, opr: 0.1, zmena: 12.3, cas: 51.9, ypom: 3400, vVrcholu: 3294},
+      {vzd: 1400, zam: 358, opr: 0.1, zmena: 12.0, cas: 51.8, ypom: 3400, vVrcholu: 3282},
+      {vzd: 1500, zam: 367, opr: 0.1, zmena: 12.0, cas: 51.7, ypom: 3400, vVrcholu: 3269},
+      {vzd: 1600, zam: 375, opr: 0.1, zmena: 11.9, cas: 51.6, ypom: 3400, vVrcholu: 3256},
+      {vzd: 1700, zam: 383, opr: 0.1, zmena: 11.8, cas: 51.5, ypom: 3400, vVrcholu: 3243},
+      {vzd: 1800, zam: 392, opr: 0.1, zmena: 11.6, cas: 51.4, ypom: 3400, vVrcholu: 3230},
+      {vzd: 1900, zam: 400, opr: 0.1, zmena: 11.5, cas: 51.2, ypom: 3300, vVrcholu: 3214},
+      {vzd: 2000, zam: 409, opr: 0.1, zmena: 11.2, cas: 51.1, ypom: 3300, vVrcholu: 3200},
+      {vzd: 2100, zam: 418, opr: 0.1, zmena: 11.2, cas: 51.0, ypom: 3300, vVrcholu: 3183},
+      {vzd: 2200, zam: 427, opr: 0.1, zmena: 11.0, cas: 50.9, ypom: 3300, vVrcholu: 3167},
+      {vzd: 2300, zam: 436, opr: 0.1, zmena: 11.0, cas: 50.7, ypom: 3300, vVrcholu: 3150},
+      {vzd: 2400, zam: 445, opr: 0.1, zmena: 10.8, cas: 50.6, ypom: 3200, vVrcholu: 3134},
+      {vzd: 2500, zam: 454, opr: 0.1, zmena: 10.5, cas: 50.4, ypom: 3200, vVrcholu: 3115},
+      {vzd: 2600, zam: 464, opr: 0.1, zmena: 10.4, cas: 50.3, ypom: 3200, vVrcholu: 3097},
+      {vzd: 2700, zam: 474, opr: 0.1, zmena: 10.3, cas: 50.1, ypom: 3200, vVrcholu: 3077},
+      {vzd: 2800, zam: 483, opr: 0.1, zmena: 10.1, cas: 50.0, ypom: 3200, vVrcholu: 3057},
+      {vzd: 2900, zam: 493, opr: 0.2, zmena: 9.9, cas: 49.8, ypom: 3100, vVrcholu: 3037},
+      {vzd: 3000, zam: 503, opr: 0.2, zmena: 9.8, cas: 49.6, ypom: 3100, vVrcholu: 3015},
+      {vzd: 3100, zam: 513, opr: 0.2, zmena: 9.5, cas: 49.4, ypom: 3100, vVrcholu: 2993},
+      {vzd: 3200, zam: 524, opr: 0.2, zmena: 9.4, cas: 49.2, ypom: 3100, vVrcholu: 2969},
+      {vzd: 3300, zam: 535, opr: 0.2, zmena: 9.2, cas: 49.0, ypom: 3100, vVrcholu: 2945},
+      {vzd: 3400, zam: 545, opr: 0.2, zmena: 9.0, cas: 48.8, ypom: 3100, vVrcholu: 2920},
+      {vzd: 3500, zam: 557, opr: 0.2, zmena: 8.8, cas: 48.6, ypom: 3000, vVrcholu: 2894},
+      {vzd: 3600, zam: 568, opr: 0.3, zmena: 8.6, cas: 48.4, ypom: 3000, vVrcholu: 2867},
+      {vzd: 3700, zam: 580, opr: 0.3, zmena: 8.4, cas: 48.1, ypom: 3000, vVrcholu: 2839},
+      {vzd: 3800, zam: 591, opr: 0.3, zmena: 8.1, cas: 47.9, ypom: 2900, vVrcholu: 2811},
+      {vzd: 3900, zam: 604, opr: 0.3, zmena: 8.0, cas: 47.6, ypom: 2900, vVrcholu: 2780},
+      {vzd: 4000, zam: 616, opr: 0.4, zmena: 7.7, cas: 47.4, ypom: 2900, vVrcholu: 2748},
+      {vzd: 4100, zam: 629, opr: 0.4, zmena: 7.5, cas: 47.1, ypom: 2900, vVrcholu: 2714},
+      {vzd: 4200, zam: 643, opr: 0.4, zmena: 7.2, cas: 46.8, ypom: 2800, vVrcholu: 2680},
+      {vzd: 4300, zam: 656, opr: 0.5, zmena: 7.0, cas: 46.4, ypom: 2800, vVrcholu: 2643},
+      {vzd: 4400, zam: 671, opr: 0.5, zmena: 6.7, cas: 46.1, ypom: 2700, vVrcholu: 2604},
+      {vzd: 4500, zam: 686, opr: 0.6, zmena: 6.5, cas: 45.7, ypom: 2700, vVrcholu: 2563},
+      {vzd: 4600, zam: 701, opr: 0.6, zmena: 6.2, cas: 45.3, ypom: 2700, vVrcholu: 2521},
+      {vzd: 4700, zam: 717, opr: 0.7, zmena: 5.9, cas: 44.9, ypom: 2600, vVrcholu: 2476},
+      {vzd: 4800, zam: 734, opr: 0.7, zmena: 5.6, cas: 44.5, ypom: 2500, vVrcholu: 2428},
+      {vzd: 4900, zam: 752, opr: 0.8, zmena: 5.2, cas: 44.0, ypom: 2500, vVrcholu: 2375},
+      {vzd: 5000, zam: 771, opr: 0.8, zmena: 4.9, cas: 43.5, ypom: 2400, vVrcholu: 2320},
+      {vzd: 5100, zam: 792, opr: 0.9, zmena: 4.6, cas: 42.9, ypom: 2400, vVrcholu: 2260},
+      {vzd: 5200, zam: 814, opr: 1.0, zmena: 4.1, cas: 42.3, ypom: 2300, vVrcholu: 2194},
+      {vzd: 5300, zam: 838, opr: 1.2, zmena: 3.7, cas: 41.6, ypom: 2300, vVrcholu: 2119},
+      {vzd: 5400, zam: 865, opr: 1.5, zmena: 3.1, cas: 40.7, ypom: 2200, vVrcholu: 2036},
+      {vzd: 5500, zam: 897, opr: 2.0, zmena: 2.5, cas: 39.7, ypom: 2100, vVrcholu: 1937},
+      {vzd: 5600, zam: 938, opr: 3.7, zmena: 1.5, cas: 38.4, ypom: 2000, vVrcholu: 1811},
+      {vzd: 5700, zam: 1003, opr: 5.8, zmena: 0.5, cas: 36.2, ypom: 1900, vVrcholu: 1607},
+      {vzd: 5725, zam: 1054, opr: 10.0, zmena: 0.0, cas: 34.3, ypom: 1600, vVrcholu: 1446},
+      {vzd: 5717, zam: 1083, opr: 12.1, zmena: 0.3, cas: 33.2, ypom: 1400, vVrcholu: 1353},
+    ],
+    "Náplň 6": [
+      {vzd: 1203, zam: 333, opr: 0.1, zmena: 14.1, cas: 55.5, ypom: 3900, vVrcholu: 3769},
+      {vzd: 1300, zam: 340, opr: 0.1, zmena: 13.9, cas: 55.5, ypom: 3900, vVrcholu: 3763},
+      {vzd: 1400, zam: 347, opr: 0.1, zmena: 14.1, cas: 55.4, ypom: 3800, vVrcholu: 3755},
+      {vzd: 1500, zam: 355, opr: 0.1, zmena: 13.9, cas: 55.3, ypom: 3800, vVrcholu: 3748},
+      {vzd: 1600, zam: 362, opr: 0.1, zmena: 13.7, cas: 55.3, ypom: 3800, vVrcholu: 3740},
+      {vzd: 1700, zam: 369, opr: 0.1, zmena: 13.7, cas: 55.2, ypom: 3800, vVrcholu: 3733},
+      {vzd: 1800, zam: 376, opr: 0.1, zmena: 13.7, cas: 55.2, ypom: 3800, vVrcholu: 3723},
+      {vzd: 1900, zam: 384, opr: 0.1, zmena: 13.5, cas: 55.1, ypom: 3800, vVrcholu: 3714},
+      {vzd: 2000, zam: 391, opr: 0.1, zmena: 13.3, cas: 55.0, ypom: 3800, vVrcholu: 3704},
+      {vzd: 2100, zam: 399, opr: 0.1, zmena: 13.3, cas: 54.9, ypom: 3800, vVrcholu: 3694},
+      {vzd: 2200, zam: 406, opr: 0.1, zmena: 13.3, cas: 54.9, ypom: 3800, vVrcholu: 3683},
+      {vzd: 2300, zam: 414, opr: 0.1, zmena: 13.0, cas: 54.8, ypom: 3800, vVrcholu: 3673},
+      {vzd: 2400, zam: 421, opr: 0.1, zmena: 13.2, cas: 54.7, ypom: 3800, vVrcholu: 3661},
+      {vzd: 2500, zam: 429, opr: 0.1, zmena: 12.8, cas: 54.6, ypom: 3800, vVrcholu: 3649},
+      {vzd: 2600, zam: 437, opr: 0.1, zmena: 12.8, cas: 54.5, ypom: 3700, vVrcholu: 3636},
+      {vzd: 2700, zam: 444, opr: 0.1, zmena: 12.7, cas: 54.4, ypom: 3700, vVrcholu: 3623},
+      {vzd: 2800, zam: 452, opr: 0.1, zmena: 12.5, cas: 54.3, ypom: 3700, vVrcholu: 3608},
+      {vzd: 2900, zam: 460, opr: 0.1, zmena: 12.3, cas: 54.2, ypom: 3700, vVrcholu: 3594},
+      {vzd: 3000, zam: 468, opr: 0.1, zmena: 12.3, cas: 54.1, ypom: 3700, vVrcholu: 3580},
+      {vzd: 3100, zam: 477, opr: 0.1, zmena: 12.0, cas: 54.0, ypom: 3700, vVrcholu: 3563},
+      {vzd: 3200, zam: 485, opr: 0.1, zmena: 12.0, cas: 53.8, ypom: 3600, vVrcholu: 3547},
+      {vzd: 3300, zam: 493, opr: 0.2, zmena: 11.8, cas: 53.7, ypom: 3600, vVrcholu: 3530},
+      {vzd: 3400, zam: 502, opr: 0.2, zmena: 11.8, cas: 53.6, ypom: 3600, vVrcholu: 3513},
+      {vzd: 3500, zam: 510, opr: 0.2, zmena: 11.5, cas: 53.4, ypom: 3600, vVrcholu: 3494},
+      {vzd: 3600, zam: 519, opr: 0.2, zmena: 11.4, cas: 53.3, ypom: 3600, vVrcholu: 3476},
+      {vzd: 3700, zam: 528, opr: 0.2, zmena: 11.2, cas: 53.1, ypom: 3600, vVrcholu: 3457},
+      {vzd: 3800, zam: 537, opr: 0.2, zmena: 11.0, cas: 53.0, ypom: 3500, vVrcholu: 3435},
+      {vzd: 3900, zam: 546, opr: 0.2, zmena: 10.9, cas: 52.8, ypom: 3500, vVrcholu: 3415},
+      {vzd: 4000, zam: 555, opr: 0.2, zmena: 10.6, cas: 52.6, ypom: 3500, vVrcholu: 3393},
+      {vzd: 4100, zam: 564, opr: 0.2, zmena: 10.5, cas: 52.5, ypom: 3500, vVrcholu: 3370},
+      {vzd: 4200, zam: 574, opr: 0.2, zmena: 10.3, cas: 52.3, ypom: 3500, vVrcholu: 3346},
+      {vzd: 4300, zam: 583, opr: 0.3, zmena: 10.1, cas: 52.1, ypom: 3400, vVrcholu: 3320},
+      {vzd: 4400, zam: 593, opr: 0.3, zmena: 9.9, cas: 51.9, ypom: 3400, vVrcholu: 3295},
+      {vzd: 4500, zam: 603, opr: 0.3, zmena: 9.7, cas: 51.6, ypom: 3400, vVrcholu: 3268},
+      {vzd: 4600, zam: 614, opr: 0.3, zmena: 9.4, cas: 51.4, ypom: 3300, vVrcholu: 3239},
+      {vzd: 4700, zam: 624, opr: 0.3, zmena: 9.3, cas: 51.2, ypom: 3300, vVrcholu: 3210},
+      {vzd: 4800, zam: 635, opr: 0.3, zmena: 9.0, cas: 50.9, ypom: 3300, vVrcholu: 3178},
+      {vzd: 4900, zam: 646, opr: 0.3, zmena: 8.7, cas: 50.7, ypom: 3200, vVrcholu: 3146},
+      {vzd: 5000, zam: 658, opr: 0.3, zmena: 8.5, cas: 50.4, ypom: 3200, vVrcholu: 3114},
+      {vzd: 5100, zam: 669, opr: 0.4, zmena: 8.3, cas: 50.1, ypom: 3200, vVrcholu: 3078},
+      {vzd: 5200, zam: 682, opr: 0.4, zmena: 7.9, cas: 49.8, ypom: 3100, vVrcholu: 3041},
+      {vzd: 5300, zam: 694, opr: 0.4, zmena: 7.7, cas: 49.5, ypom: 3100, vVrcholu: 3003},
+      {vzd: 5400, zam: 707, opr: 0.5, zmena: 7.4, cas: 49.1, ypom: 3100, vVrcholu: 2962},
+      {vzd: 5500, zam: 721, opr: 0.5, zmena: 7.1, cas: 48.8, ypom: 3000, vVrcholu: 2917},
+      {vzd: 5600, zam: 735, opr: 0.6, zmena: 6.8, cas: 48.4, ypom: 3000, vVrcholu: 2871},
+      {vzd: 5700, zam: 750, opr: 0.7, zmena: 6.4, cas: 48.0, ypom: 2900, vVrcholu: 2823},
+      {vzd: 5800, zam: 765, opr: 0.8, zmena: 6.0, cas: 47.5, ypom: 2900, vVrcholu: 2769},
+      {vzd: 5900, zam: 782, opr: 0.9, zmena: 5.6, cas: 47.0, ypom: 2800, vVrcholu: 2713},
+      {vzd: 6000, zam: 799, opr: 1.1, zmena: 5.2, cas: 46.5, ypom: 2800, vVrcholu: 2653},
+      {vzd: 6100, zam: 819, opr: 1.2, zmena: 4.8, cas: 45.9, ypom: 2700, vVrcholu: 2585},
+      {vzd: 6200, zam: 840, opr: 1.5, zmena: 4.2, cas: 15.2, ypom: 2700, vVrcholu: 2510},
+      {vzd: 6300, zam: 863, opr: 1.7, zmena: 3.6, cas: 44.4, ypom: 2600, vVrcholu: 2423},
+      {vzd: 6400, zam: 891, opr: 2.0, zmena: 2.9, cas: 43.5, ypom: 2500, vVrcholu: 2323},
+      {vzd: 6500, zam: 925, opr: 2.3, zmena: 1.9, cas: 42.3, ypom: 2400, vVrcholu: 2193},
+      {vzd: 6600, zam: 979, opr: 3.4, zmena: 0.6, cas: 40.3, ypom: 2200, vVrcholu: 1991},
+      {vzd: 6632, zam: 1031, opr: 8.3, zmena: 0.0, cas: 38.2, ypom: 1800, vVrcholu: 1794},
+    ],
+    "Náplň D": [
+      {vzd: 1438, zam: 333, opr: 0.1, zmena: 16.6, cas: 62.0, ypom: 4800, vVrcholu: 4708},
+      {vzd: 1500, zam: 337, opr: 0.1, zmena: 17.2, cas: 62.0, ypom: 4800, vVrcholu: 4705},
+      {vzd: 1600, zam: 343, opr: 0.1, zmena: 16.7, cas: 31.9, ypom: 4800, vVrcholu: 4701},
+      {vzd: 1700, zam: 349, opr: 0.1, zmena: 16.9, cas: 61.9, ypom: 4800, vVrcholu: 4696},
+      {vzd: 1800, zam: 355, opr: 0.1, zmena: 16.9, cas: 61.9, ypom: 4800, vVrcholu: 4690},
+      {vzd: 1900, zam: 361, opr: 0.1, zmena: 16.7, cas: 61.8, ypom: 4800, vVrcholu: 4685},
+      {vzd: 2000, zam: 367, opr: 0.1, zmena: 16.7, cas: 61.8, ypom: 4800, vVrcholu: 4679},
+      {vzd: 2100, zam: 373, opr: 0.1, zmena: 16.7, cas: 61.7, ypom: 4800, vVrcholu: 4672},
+      {vzd: 2200, zam: 379, opr: 0.1, zmena: 16.4, cas: 61.7, ypom: 4800, vVrcholu: 4664},
+      {vzd: 2300, zam: 385, opr: 0.1, zmena: 16.4, cas: 61.6, ypom: 4800, vVrcholu: 4657},
+      {vzd: 2400, zam: 391, opr: 0.1, zmena: 16.4, cas: 61.6, ypom: 4800, vVrcholu: 4650},
+      {vzd: 2500, zam: 397, opr: 0.1, zmena: 16.4, cas: 61.5, ypom: 4800, vVrcholu: 4640},
+      {vzd: 2600, zam: 403, opr: 0.1, zmena: 16.1, cas: 61.5, ypom: 4800, vVrcholu: 4633},
+      {vzd: 2700, zam: 409, opr: 0.1, zmena: 16.1, cas: 61.4, ypom: 4700, vVrcholu: 4623},
+      {vzd: 2800, zam: 415, opr: 0.1, zmena: 15.9, cas: 61.3, ypom: 4700, vVrcholu: 4613},
+      {vzd: 2900, zam: 422, opr: 0.1, zmena: 16.1, cas: 61.3, ypom: 4700, vVrcholu: 4604},
+      {vzd: 3000, zam: 428, opr: 0.1, zmena: 15.6, cas: 61.2, ypom: 4700, vVrcholu: 4593},
+      {vzd: 3100, zam: 434, opr: 0.1, zmena: 15.9, cas: 61.1, ypom: 4600, vVrcholu: 4582},
+      {vzd: 3200, zam: 441, opr: 0.1, zmena: 15.4, cas: 61.0, ypom: 4600, vVrcholu: 4570},
+      {vzd: 3300, zam: 447, opr: 0.1, zmena: 15.6, cas: 61.0, ypom: 4600, vVrcholu: 4558},
+      {vzd: 3400, zam: 454, opr: 0.1, zmena: 15.4, cas: 60.9, ypom: 4600, vVrcholu: 4547},
+      {vzd: 3500, zam: 460, opr: 0.1, zmena: 15.2, cas: 60.8, ypom: 4600, vVrcholu: 4534},
+      {vzd: 3600, zam: 467, opr: 0.1, zmena: 15.2, cas: 60.7, ypom: 4600, vVrcholu: 4524},
+      {vzd: 3700, zam: 473, opr: 0.1, zmena: 14.9, cas: 60.6, ypom: 4600, vVrcholu: 4506},
+      {vzd: 3800, zam: 480, opr: 0.1, zmena: 14.9, cas: 60.5, ypom: 4600, vVrcholu: 4491},
+      {vzd: 3900, zam: 487, opr: 0.1, zmena: 14.7, cas: 60.4, ypom: 4600, vVrcholu: 4479},
+      {vzd: 4000, zam: 493, opr: 0.1, zmena: 14.7, cas: 60.3, ypom: 4500, vVrcholu: 4461},
+      {vzd: 4100, zam: 500, opr: 0.1, zmena: 14.3, cas: 60.2, ypom: 4500, vVrcholu: 4444},
+      {vzd: 4200, zam: 507, opr: 0.1, zmena: 14.3, cas: 60.1, ypom: 4500, vVrcholu: 4427},
+      {vzd: 4300, zam: 514, opr: 0.1, zmena: 14.3, cas: 59.9, ypom: 4400, vVrcholu: 4410},
+      {vzd: 4400, zam: 521, opr: 0.2, zmena: 13.9, cas: 59.8, ypom: 4400, vVrcholu: 4392},
+      {vzd: 4500, zam: 528, opr: 0.2, zmena: 13.9, cas: 59.7, ypom: 4400, vVrcholu: 4374},
+      {vzd: 4600, zam: 536, opr: 0.2, zmena: 13.7, cas: 59.6, ypom: 4400, vVrcholu: 4354},
+      {vzd: 4700, zam: 543, opr: 0.2, zmena: 13.5, cas: 59.4, ypom: 4400, vVrcholu: 4334},
+      {vzd: 4800, zam: 550, opr: 0.2, zmena: 13.3, cas: 59.3, ypom: 4400, vVrcholu: 4314},
+      {vzd: 4900, zam: 558, opr: 0.2, zmena: 13.2, cas: 59.1, ypom: 4400, vVrcholu: 4292},
+      {vzd: 5000, zam: 565, opr: 0.2, zmena: 12.8, cas: 59.0, ypom: 4300, vVrcholu: 4271},
+      {vzd: 5100, zam: 573, opr: 0.2, zmena: 12.8, cas: 58.8, ypom: 4300, vVrcholu: 4246},
+      {vzd: 5200, zam: 581, opr: 0.2, zmena: 12.7, cas: 58.6, ypom: 4300, vVrcholu: 4224},
+      {vzd: 5300, zam: 589, opr: 0.2, zmena: 12.3, cas: 58.5, ypom: 4300, vVrcholu: 4199},
+      {vzd: 5400, zam: 597, opr: 0.2, zmena: 12.2, cas: 58.3, ypom: 4200, vVrcholu: 4173},
+      {vzd: 5500, zam: 605, opr: 0.2, zmena: 11.9, cas: 58.1, ypom: 4200, vVrcholu: 4147},
+      {vzd: 5600, zam: 614, opr: 0.2, zmena: 11.8, cas: 57.9, ypom: 4200, vVrcholu: 4119},
+      {vzd: 5700, zam: 622, opr: 0.3, zmena: 11.6, cas: 57.7, ypom: 4200, vVrcholu: 4090},
+      {vzd: 5800, zam: 631, opr: 0.3, zmena: 11.2, cas: 57.5, ypom: 4100, vVrcholu: 4060},
+      {vzd: 5900, zam: 640, opr: 0.3, zmena: 11.1, cas: 57.3, ypom: 4100, vVrcholu: 4029},
+      {vzd: 6000, zam: 649, opr: 0.3, zmena: 10.8, cas: 57.0, ypom: 4100, vVrcholu: 3997},
+      {vzd: 6100, zam: 658, opr: 0.3, zmena: 10.6, cas: 56.8, ypom: 4000, vVrcholu: 3964},
+      {vzd: 6200, zam: 667, opr: 0.4, zmena: 10.3, cas: 56.5, ypom: 4000, vVrcholu: 3930},
+      {vzd: 6300, zam: 677, opr: 0.4, zmena: 10.0, cas: 56.3, ypom: 4000, vVrcholu: 3894},
+      {vzd: 6400, zam: 687, opr: 0.4, zmena: 9.8, cas: 56.0, ypom: 3900, vVrcholu: 3855},
+      {vzd: 6500, zam: 697, opr: 0.4, zmena: 9.4, cas: 55.7, ypom: 3900, vVrcholu: 3817},
+      {vzd: 6600, zam: 708, opr: 0.5, zmena: 9.2, cas: 55.4, ypom: 3800, vVrcholu: 3774},
+      {vzd: 6700, zam: 719, opr: 0.5, zmena: 8.8, cas: 55.1, ypom: 3800, vVrcholu: 3732},
+      {vzd: 6800, zam: 730, opr: 0.5, zmena: 8.5, cas: 54.7, ypom: 3800, vVrcholu: 3687},
+      {vzd: 6900, zam: 742, opr: 0.5, zmena: 8.2, cas: 54.4, ypom: 3700, vVrcholu: 3637},
+      {vzd: 7000, zam: 754, opr: 0.5, zmena: 7.8, cas: 54.0, ypom: 3600, vVrcholu: 3588},
+      {vzd: 7100, zam: 767, opr: 0.6, zmena: 7.5, cas: 53.6, ypom: 3600, vVrcholu: 3532},
+      {vzd: 7200, zam: 780, opr: 0.7, zmena: 7.0, cas: 53.1, ypom: 3500, vVrcholu: 3475},
+      {vzd: 7300, zam: 794, opr: 0.8, zmena: 6.6, cas: 52.6, ypom: 3500, vVrcholu: 3414},
+      {vzd: 7400, zam: 809, opr: 1.0, zmena: 6.1, cas: 52.1, ypom: 3400, vVrcholu: 3346},
+      {vzd: 7500, zam: 826, opr: 1.2, zmena: 5.6, cas: 51.5, ypom: 3300, vVrcholu: 3274},
+      {vzd: 7600, zam: 843, opr: 1.4, zmena: 5.1, cas: 50.9, ypom: 3200, vVrcholu: 3195},
+      {vzd: 7700, zam: 863, opr: 1.7, zmena: 4.5, cas: 50.2, ypom: 3100, vVrcholu: 3105},
+      {vzd: 7800, zam: 885, opr: 2.1, zmena: 3.8, cas: 49.3, ypom: 3100, vVrcholu: 3000},
+      {vzd: 7900, zam: 912, opr: 2.5, zmena: 2.9, cas: 48.3, ypom: 2900, vVrcholu: 2877},
+      {vzd: 8000, zam: 930, opr: 3.7, zmena: 1.2, cas: 46.6, ypom: 2700, vVrcholu: 2621},
+      {vzd: 8032, zam: 1027, opr: 6.7, zmena: 0.0, cas: 43.3, ypom: 2500, vVrcholu: 2323},
+    ],
+  };
+
+  const SETS_100K = [["ABCDEFGH", "ABCDEFGHJKLMNPQRSTUV"], ["JKLMNPQR", "FGHJKLMNPQRSTUVABCDE"], ["STUVWXYZ", "ABCDEFGHJKLMNPQRSTUV"]];
+
+  function getMinN(band) {
+    const lats = {'C':-80,'D':-72,'E':-64,'F':-56,'G':-48,'H':-40,'J':-32,'K':-24,'L':-16,'M':-8,'N':0,'P':8,'Q':16,'R':24,'S':32,'T':40,'U':48,'V':56,'W':64,'X':72};
+    const lat = lats[band] || 0;
+    return lat < 0 ? 10000000.0 + (lat * 111000.0) : lat * 111000.0;
+  }
+
+  function mgrsToUtm(mgrsStr) {
+    const clean = mgrsStr.replace(/\s+/g, '').toUpperCase();
+    const m = clean.match(/^(\d{1,2})([C-X])([A-Z]{2})(\d+)$/);
+    if (!m) throw new Error("Chybný MGRS formát");
+    const zone = parseInt(m[1], 10), band = m[2], sqId = m[3], digits = m[4];
+    if (digits.length % 2 !== 0) throw new Error("MGRS musí mať párny počet číslic");
+    const half = digits.length / 2;
+    const eVal = parseFloat(digits.substring(0, half)) * Math.pow(10, 5 - half);
+    const nVal = parseFloat(digits.substring(half)) * Math.pow(10, 5 - half);
+    const setIdx = (zone - 1) % 3;
+    const [eSet, nSet] = SETS_100K[setIdx];
+    const eIdx = eSet.indexOf(sqId[0]), nIdx = nSet.indexOf(sqId[1]);
+    if (eIdx === -1 || nIdx === -1) throw new Error("Neplatný štvoruholník");
+    let n100k = nIdx * 100000.0, minN = getMinN(band);
+    while (n100k < minN) n100k += 2000000.0;
+    return { e: (eIdx + 1) * 100000.0 + eVal, n: n100k + nVal };
+  }
+
+  function formatDielce(val) {
+    let d = Math.round(val) % 6000;
+    if (d < 0) d += 6000;
+    return `${String(Math.floor(d / 100)).padStart(2, '0')}-${String(d % 100).padStart(2, '0')} dc`;
+  }
+
+  function interpoluj(table, dist) {
+    if (!table || table.length === 0) return null;
+    if (dist <= table[0].vzd) return table[0];
+    if (dist >= table[table.length - 1].vzd) return table[table.length - 1];
+
+    let p1 = table[0], p2 = table[1];
+    for (let i = 0; i < table.length - 1; i++) {
+      if (dist >= table[i].vzd && dist <= table[i+1].vzd) {
+        p1 = table[i];
+        p2 = table[i+1];
+        break;
+      }
+    }
+
+    const t = (dist - p1.vzd) / (p2.vzd - p1.vzd);
+    return {
+      zam: p1.zam + t * (p2.zam - p1.zam),
+      opr: p1.opr + t * (p2.opr - p1.opr),
+      zmena: p1.zmena + t * (p2.zmena - p1.zmena),
+      cas: p1.cas + t * (p2.cas - p1.cas),
+      ypom: p1.ypom + t * (p2.ypom - p1.ypom),
+      vVrcholu: p1.vVrcholu + t * (p2.vVrcholu - p1.vVrcholu)
+    };
+  }
+
+  function vypocitaj() {
+    try {
+      const hs = parseInt(document.getElementById('hlavnySmer').value, 10);
+      const hzb = parseInt(document.getElementById('hzb').value, 10);
+      const m1 = document.getElementById('mgrsMoja').value.trim();
+      const m2 = document.getElementById('mgrsCiel').value.trim();
+      const vyskaPalpost = parseFloat(document.getElementById('vyskaPalpost').value) || 0;
+      const vyskaCiel = parseFloat(document.getElementById('vyskaCiel').value) || 0;
+
+      if (isNaN(hs) || isNaN(hzb)) throw new Error("Zadaj Hlavný smer aj HZB");
+      const p1 = mgrsToUtm(m1), p2 = mgrsToUtm(m2);
+      const dx = p2.e - p1.e, dy = p2.n - p1.n;
+      const dist = Math.round(Math.sqrt(dx * dx + dy * dy));
+      let deg = Math.atan2(dx, dy) * (180 / Math.PI);
+      if (deg < 0) deg += 360.0;
+      const smernik = deg * (6000.0 / 360.0);
+      const smRound = Math.round(smernik);
+
+      let napln = "";
+      const validNaplne = [];
+      for (const [k, tab] of Object.entries(BALISTICKE_TABULKY)) {
+        const minV = tab[0].vzd;
+        const maxV = tab[tab.length - 1].vzd;
+        if (dist >= minV && dist <= maxV) {
+          validNaplne.push({ name: k, tab: tab, diff: Math.abs((minV + maxV)/2 - dist) });
+        }
+      }
+
+      if (validNaplne.length > 0) {
+        validNaplne.sort((a, b) => a.diff - b.diff);
+        napln = validNaplne[0].name;
+      } else {
+        const fallbackMap = { "Náplň 1": 865.5, "Náplň 2": 1520.0, "Náplň 3": 2218.0, "Náplň 4": 2874.0, "Náplň 5": 3408.0, "Náplň 6": 3901.0, "Náplň D": 4719.0 };
+        let minD = Infinity;
+        for (const [k, v] of Object.entries(fallbackMap)) {
+          if (Math.abs(v - dist) < minD) { minD = Math.abs(v - dist); napln = k; }
+        }
+      }
+
+      let tabData = null;
+      if (BALISTICKE_TABULKY[napln]) {
+        tabData = interpoluj(BALISTICKE_TABULKY[napln], dist);
+      }
+
+      if (tabData) {
+        const prevysenie = vyskaCiel - vyskaPalpost;
+        const korekciaPrevysenia = (prevysenie / 10.0) * tabData.opr;
+        const upravenaDiaľkaZam = tabData.zam + korekciaPrevysenia;
+        
+        let zam = (hs >= smRound) ? (upravenaDiaľkaZam - (hs - smRound)) : (upravenaDiaľkaZam + (smRound - hs));
+
+        document.getElementById('resSmernik').innerText = formatDielce(smernik);
+        document.getElementById('resVzdialenost').innerText = dist + " m";
+        document.getElementById('resNapln').innerText = napln;
+        document.getElementById('resZameriavac').innerText = formatDielce(zam);
+        document.getElementById('resDiaľkaZam').innerText = Math.round(upravenaDiaľkaZam * 10) / 10 + " dielcov";
+        document.getElementById('resDobaLetu').innerText = Math.round(tabData.cas * 10) / 10 + " s";
+        document.getElementById('resVyskaVrcholu').innerText = Math.round(vyskaPalpost + tabData.vVrcholu) + " m n.m.";
+      } else {
+        let zam = (hs >= smRound) ? (hzb - (hs - smRound)) : (hzb + (smRound - hs));
+        document.getElementById('resSmernik').innerText = formatDielce(smernik);
+        document.getElementById('resVzdialenost').innerText = dist + " m";
+        document.getElementById('resNapln').innerText = napln;
+        document.getElementById('resZameriavac').innerText = formatDielce(zam);
+        document.getElementById('resDiaľkaZam').innerText = "-";
+        document.getElementById('resDobaLetu').innerText = "-";
+        document.getElementById('resVyskaVrcholu').innerText = "-";
+      }
+
+    } catch (e) { alert(e.message); }
+  }
+</script>
+</body>
+</html>
