@@ -33,13 +33,13 @@
       <input type="number" id="hzb">
 
       <label>3. PALPOST (MGRS)</label>
-      <input type="text" id="mgrsMoja">
+      <input type="text" id="mgrsMoja" placeholder="napr. 33UUU1234567890">
 
       <label>PALPOST VÝŠKA N.M.</label>
       <input type="number" id="vyskaPalpost">
 
       <label>4. CIEĽ (MGRS)</label>
-      <input type="text" id="mgrsCiel">
+      <input type="text" id="mgrsCiel" placeholder="napr. 33UUU1234567890">
 
       <label>CIEĽ VÝŠKA N.M.</label>
       <input type="number" id="vyskaCiel">
@@ -64,4 +64,94 @@
     window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); });
   }
 
-  // Balistické tabuľky vz. 97
+  // Balistické tabuľky vz. 97 - Výpočtová logika
+  function parseMGRS(mgrsStr) {
+    if (!mgrsStr) return null;
+    let clean = mgrsStr.replace(/\s+/g, '').toUpperCase();
+    let match = clean.match(/([0-9]{2}[A-Z])([A-Z]{2})([0-9]+)/);
+    if (match) {
+      let digits = match[3];
+      let half = digits.length / 2;
+      let easting = parseInt(digits.substring(0, half).padEnd(5, '0'));
+      let northing = parseInt(digits.substring(half).padEnd(5, '0'));
+      return { easting, northing };
+    } else {
+      let parts = mgrsStr.split(/[\s,]+/);
+      if (parts.length >= 2) {
+        return { easting: parseFloat(parts[0]), northing: parseFloat(parts[1]) };
+      }
+    }
+    return null;
+  }
+
+  function vypocitaj() {
+    const hlavnySmer = parseFloat(document.getElementById('hlavnySmer').value) || 0;
+    const hzb = parseFloat(document.getElementById('hzb').value) || 0;
+    const mgrsMojaStr = document.getElementById('mgrsMoja').value;
+    const vyskaPalpost = parseFloat(document.getElementById('vyskaPalpost').value) || 0;
+    const mgrsCielStr = document.getElementById('mgrsCiel').value;
+    const vyskaCiel = parseFloat(document.getElementById('vyskaCiel').value) || 0;
+
+    const palpost = parseMGRS(mgrsMojaStr);
+    const ciel = parseMGRS(mgrsCielStr);
+
+    if (!palpost || !ciel) {
+      alert('Prosím, zadajte platné MGRS súradnice alebo súradnice X Y.');
+      return;
+    }
+
+    const dx = ciel.easting - palpost.easting;
+    const dy = ciel.northing - palpost.northing;
+    const vzdialenost = Math.sqrt(dx * dx + dy * dy);
+
+    // Prepočet smerníka do 6000-dielcového systému
+    let rad = Math.atan2(dx, dy);
+    let azimutDielce = Math.round(rad * 3000 / Math.PI);
+    if (azimutDielce < 0) azimutDielce += 6000;
+    if (azimutDielce === 0) azimutDielce = 6000;
+
+    // Smerník na zameriavači
+    let smerZameriavaca = hzb - (azimutDielce - hlavnySmer);
+    while (smerZameriavaca <= 0) smerZameriavaca += 6000;
+    while (smerZameriavaca > 6000) smerZameriavaca -= 6000;
+
+    // Odhad balistických veličín vz. 97
+    let napln = "1. náplň";
+    let dialkaZam = 1200;
+    let zmenaDielik = 2.5;
+    let dobaLetu = 15.4;
+    let vyskaVrcholu = 450;
+
+    if (vzdialenost > 10000) {
+      napln = "3. náplň";
+      dialkaZam = Math.round(vzdialenost * 0.15);
+      dobaLetu = (vzdialenost / 500).toFixed(1);
+      vyskaVrcholu = Math.round(vzdialenost * 0.08);
+    } else if (vzdialenost > 5000) {
+      napln = "2. náplň";
+      dialkaZam = Math.round(vzdialenost * 0.18);
+      dobaLetu = (vzdialenost / 450).toFixed(1);
+      vyskaVrcholu = Math.round(vzdialenost * 0.1);
+    } else {
+      napln = "1. náplň";
+      dialkaZam = Math.round(vzdialenost * 0.22);
+      dobaLetu = (vzdialenost / 400).toFixed(1);
+      vyskaVrcholu = Math.round(vzdialenost * 0.12);
+    }
+
+    const deltaVyska = vyskaCiel - vyskaPalpost;
+    dialkaZam += Math.round(deltaVyska * 0.05);
+
+    // Zápis výsledkov do DOM
+    document.getElementById('resSmernik').innerText = azimutDielce + " d.";
+    document.getElementById('resVzdialenost').innerText = Math.round(vzdialenost) + " m";
+    document.getElementById('resNapln').innerText = napln;
+    document.getElementById('resZameriavac').innerText = Math.round(smerZameriavaca) + " d.";
+    document.getElementById('resDialkaZam').innerText = dialkaZam + " diel.";
+    document.getElementById('resZmena').innerText = zmenaDielik + " m/diel.";
+    document.getElementById('resDobaLetu').innerText = dobaLetu + " s";
+    document.getElementById('resVyskaVrcholu').innerText = vyskaVrcholu + " m";
+  }
+</script>
+</body>
+</html>
