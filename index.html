@@ -13,6 +13,7 @@
     body { font-family: -apple-system, sans-serif; background: #121212; color: #fff; padding: 20px; margin: 0; }
     .container { padding: 20px; max-width: 600px; margin: auto; }
     .card { background: #1e1e1e; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #333; }
+    label { display: block; font-size: 0.9rem; color: #aaa; margin-top: 10px; }
     input { width: 100%; padding: 10px; margin: 5px 0 10px 0; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 5px; box-sizing: border-box; }
     button { width: 100%; padding: 12px; background: #2196f3; color: #fff; border: none; border-radius: 5px; font-weight: bold; font-size: 1rem; cursor: pointer; }
     button:hover { background: #1976d2; }
@@ -90,13 +91,15 @@
   window.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       const splash = document.getElementById('splash');
-      splash.style.opacity = '0';
-      setTimeout(() => splash.style.display = 'none', 500);
+      if (splash) {
+        splash.style.opacity = '0';
+        setTimeout(() => splash.style.display = 'none', 500);
+      }
     }, 2000);
   });
 
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); });
+    window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
   }
 
   // Balistické tabuľky vz. 97 nahraté z Excelu
@@ -328,205 +331,4 @@
       {vzd: 6600, zam: 887, opr: 1.4, zmena: 5.8, cas: 37.6, ypom: 2100, vVrcholu: 2147},
       {vzd: 6632, zam: 894, opr: 1.4, zmena: 5.7, cas: 37.3, ypom: 2100, vVrcholu: 2125}
     ],
-    "Náplň D": [
-      {vzd: 1438, zam: 333, opr: 0.1, zmena: 16.6, cas: 62.0, ypom: 4800, vVrcholu: 4708},
-      {vzd: 1500, zam: 337, opr: 0.1, zmena: 17.2, cas: 62.0, ypom: 4800, vVrcholu: 4705},
-      {vzd: 1600, zam: 343, opr: 0.1, zmena: 16.7, cas: 31.9, ypom: 4800, vVrcholu: 4701},
-      {vzd: 1700, zam: 349, opr: 0.1, zmena: 16.9, cas: 61.9, ypom: 4800, vVrcholu: 4696},
-      {vzd: 1800, zam: 355, opr: 0.1, zmena: 16.9, cas: 61.9, ypom: 4800, vVrcholu: 4690},
-      {vzd: 1900, zam: 361, opr: 0.1, zmena: 16.7, cas: 61.8, ypom: 4800, vVrcholu: 4685},
-      {vzd: 2000, zam: 367, opr: 0.1, zmena: 16.7, cas: 61.8, ypom: 4800, vVrcholu: 4679},
-      {vzd: 2100, zam: 373, opr: 0.1, zmena: 16.7, cas: 61.7, ypom: 4800, vVrcholu: 4672},
-      {vzd: 2200, zam: 379, opr: 0.1, zmena: 16.4, cas: 61.7, ypom: 4800, vVrcholu: 4664},
-      {vzd: 2300, zam: 385, opr: 0.1, zmena: 16.4, cas: 61.6, ypom: 4800, vVrcholu: 4657},
-      {vzd: 2400, zam: 391, opr: 0.1, zmena: 16.3, cas: 61.5, ypom: 4700, vVrcholu: 4648},
-      {vzd: 2500, zam: 398, opr: 0.1, zmena: 16.2, cas: 61.4, ypom: 4700, vVrcholu: 4640},
-      {vzd: 2600, zam: 404, opr: 0.1, zmena: 16.0, cas: 61.4, ypom: 4700, vVrcholu: 4631},
-      {vzd: 2700, zam: 410, opr: 0.1, zmena: 15.9, cas: 61.3, ypom: 4700, vVrcholu: 4621},
-      {vzd: 2800, zam: 417, opr: 0.1, zmena: 15.8, cas: 61.2, ypom: 4700, vVrcholu: 4611},
-      {vzd: 2900, zam: 423, opr: 0.1, zmena: 15.7, cas: 61.1, ypom: 4700, vVrcholu: 4601},
-      {vzd: 3000, zam: 430, opr: 0.1, zmena: 15.6, cas: 61.0, ypom: 4700, vVrcholu: 4590},
-      {vzd: 3100, zam: 436, opr: 0.1, zmena: 15.4, cas: 60.8, ypom: 4700, vVrcholu: 4578},
-      {vzd: 3200, zam: 443, opr: 0.1, zmena: 15.3, cas: 60.7, ypom: 4600, vVrcholu: 4566},
-      {vzd: 3300, zam: 449, opr: 0.1, zmena: 15.2, cas: 60.6, ypom: 4600, vVrcholu: 4553},
-      {vzd: 3400, zam: 456, opr: 0.1, zmena: 15.0, cas: 60.4, ypom: 4600, vVrcholu: 4540},
-      {vzd: 3500, zam: 463, opr: 0.1, zmena: 14.9, cas: 60.2, ypom: 4600, vVrcholu: 4526},
-      {vzd: 3600, zam: 470, opr: 0.1, zmena: 14.8, cas: 60.0, ypom: 4600, vVrcholu: 4511},
-      {vzd: 3700, zam: 477, opr: 0.1, zmena: 14.6, cas: 59.9, ypom: 4600, vVrcholu: 4496},
-      {vzd: 3800, zam: 484, opr: 0.1, zmena: 14.5, cas: 59.7, ypom: 4600, vVrcholu: 4480},
-      {vzd: 3900, zam: 491, opr: 0.1, zmena: 14.3, cas: 59.5, ypom: 4500, vVrcholu: 4464},
-      {vzd: 4000, zam: 498, opr: 0.1, zmena: 14.2, cas: 59.2, ypom: 4500, vVrcholu: 4447},
-      {vzd: 4100, zam: 505, opr: 0.1, zmena: 14.1, cas: 59.0, ypom: 4500, vVrcholu: 4429},
-      {vzd: 4200, zam: 512, opr: 0.1, zmena: 13.9, cas: 58.7, ypom: 4500, vVrcholu: 4410},
-      {vzd: 4300, zam: 520, opr: 0.1, zmena: 13.8, cas: 58.5, ypom: 4500, vVrcholu: 4391},
-      {vzd: 4400, zam: 527, opr: 0.1, zmena: 13.6, cas: 58.2, ypom: 4400, vVrcholu: 4371},
-      {vzd: 4500, zam: 535, opr: 0.1, zmena: 13.5, cas: 57.9, ypom: 4400, vVrcholu: 4350},
-      {vzd: 4600, zam: 543, opr: 0.1, zmena: 13.4, cas: 57.6, ypom: 4400, vVrcholu: 4328},
-      {vzd: 4700, zam: 550, opr: 0.1, zmena: 13.2, cas: 57.3, ypom: 4400, vVrcholu: 4306},
-      {vzd: 4800, zam: 558, opr: 0.1, zmena: 13.1, cas: 56.9, ypom: 4300, vVrcholu: 4283},
-      {vzd: 4900, zam: 567, opr: 0.1, zmena: 12.9, cas: 56.6, ypom: 4300, vVrcholu: 4259},
-      {vzd: 5000, zam: 575, opr: 0.1, zmena: 12.8, cas: 56.2, ypom: 4300, vVrcholu: 4235},
-      {vzd: 5100, zam: 583, opr: 0.1, zmena: 12.6, cas: 55.8, ypom: 4300, vVrcholu: 4209},
-      {vzd: 5200, zam: 592, opr: 0.1, zmena: 12.5, cas: 55.5, ypom: 4200, vVrcholu: 4183},
-      {vzd: 5300, zam: 600, opr: 0.2, zmena: 12.3, cas: 55.1, ypom: 4200, vVrcholu: 4156},
-      {vzd: 5400, zam: 609, opr: 0.2, zmena: 12.2, cas: 54.7, ypom: 4200, vVrcholu: 4128},
-      {vzd: 5500, zam: 618, opr: 0.2, zmena: 12.0, cas: 54.3, ypom: 4100, vVrcholu: 4099},
-      {vzd: 5600, zam: 627, opr: 0.2, zmena: 11.9, cas: 53.8, ypom: 4100, vVrcholu: 4069},
-      {vzd: 5700, zam: 636, opr: 0.2, zmena: 11.7, cas: 53.4, ypom: 4100, vVrcholu: 4038},
-      {vzd: 5800, zam: 645, opr: 0.2, zmena: 11.6, cas: 53.0, ypom: 4000, vVrcholu: 4006},
-      {vzd: 5900, zam: 654, opr: 0.2, zmena: 11.4, cas: 52.5, ypom: 4000, vVrcholu: 3973},
-      {vzd: 6000, zam: 664, opr: 0.2, zmena: 11.2, cas: 52.0, ypom: 4000, vVrcholu: 3939},
-      {vzd: 6100, zam: 673, opr: 0.2, zmena: 11.1, cas: 51.5, ypom: 3900, vVrcholu: 3904},
-      {vzd: 6200, zam: 683, opr: 0.3, zmena: 10.9, cas: 51.0, ypom: 3900, vVrcholu: 3867},
-      {vzd: 6300, zam: 693, opr: 0.3, zmena: 10.7, cas: 50.5, ypom: 3800, vVrcholu: 3829},
-      {vzd: 6400, zam: 703, opr: 0.3, zmena: 10.6, cas: 50.0, ypom: 3800, vVrcholu: 3790},
-      {vzd: 6500, zam: 713, opr: 0.3, zmena: 10.4, cas: 49.5, ypom: 3800, vVrcholu: 3750},
-      {vzd: 6600, zam: 724, opr: 0.3, zmena: 10.2, cas: 48.9, ypom: 3700, vVrcholu: 3708},
-      {vzd: 6700, zam: 734, opr: 0.4, zmena: 10.0, cas: 48.4, ypom: 3700, vVrcholu: 3665},
-      {vzd: 6800, zam: 745, opr: 0.4, zmena: 9.8, cas: 47.8, ypom: 3600, vVrcholu: 3620},
-      {vzd: 6900, zam: 757, opr: 0.4, zmena: 9.6, cas: 47.3, ypom: 3600, vVrcholu: 3574},
-      {vzd: 7000, zam: 768, opr: 0.5, zmena: 9.4, cas: 46.7, ypom: 3500, vVrcholu: 3526},
-      {vzd: 7100, zam: 780, opr: 0.5, zmena: 9.2, cas: 46.1, ypom: 3500, vVrcholu: 3477},
-      {vzd: 7200, zam: 792, opr: 0.6, zmena: 9.0, cas: 45.5, ypom: 3400, vVrcholu: 3426},
-      {vzd: 7300, zam: 804, opr: 0.6, zmena: 8.7, cas: 44.8, ypom: 3400, vVrcholu: 3373},
-      {vzd: 7400, zam: 817, opr: 0.7, zmena: 8.5, cas: 44.2, ypom: 3300, vVrcholu: 3319},
-      {vzd: 7500, zam: 830, opr: 0.7, zmena: 8.3, cas: 43.5, ypom: 3300, vVrcholu: 3263},
-      {vzd: 7600, zam: 844, opr: 0.8, zmena: 8.0, cas: 42.9, ypom: 3200, vVrcholu: 3205},
-      {vzd: 7700, zam: 858, opr: 0.9, zmena: 7.7, cas: 42.2, ypom: 3100, vVrcholu: 3144},
-      {vzd: 7800, zam: 873, opr: 1.0, zmena: 7.5, cas: 41.5, ypom: 3100, vVrcholu: 3082},
-      {vzd: 7900, zam: 888, opr: 1.1, zmena: 7.2, cas: 40.8, ypom: 3000, vVrcholu: 3017},
-      {vzd: 8000, zam: 905, opr: 1.2, zmena: 6.9, cas: 40.0, ypom: 2900, vVrcholu: 2950},
-      {vzd: 8032, zam: 910, opr: 1.2, zmena: 6.8, cas: 39.8, ypom: 2900, vVrcholu: 2928}
-    ]
-  };
-
-  const SETS_100K = [["ABCDEFGH", "ABCDEFGHJKLMNPQRSTUV"], ["JKLMNPQR", "FGHJKLMNPQRSTUVABCDE"], ["STUVWXYZ", "ABCDEFGHJKLMNPQRSTUV"]];
-
-  function getMinN(band) {
-    const lats = {'C':-80,'D':-72,'E':-64,'F':-56,'G':-48,'H':-40,'J':-32,'K':-24,'L':-16,'M':-8,'N':0,'P':8,'Q':16,'R':24,'S':32,'T':40,'U':48,'V':56,'W':64,'X':72};
-    const lat = lats[band] || 0;
-    return lat < 0 ? 10000000.0 + (lat * 111000.0) : lat * 111000.0;
-  }
-
-  function mgrsToUtm(mgrsStr) {
-    const clean = mgrsStr.replace(/\s+/g, '').toUpperCase();
-    const m = clean.match(/^(\d{1,2})([C-X])([A-Z]{2})(\d+)$/);
-    if (!m) throw new Error("Chybný MGRS formát");
-    const zone = parseInt(m[1], 10), band = m[2], sqId = m[3], digits = m[4];
-    if (digits.length % 2 !== 0) throw new Error("MGRS musí mať párny počet číslic");
-    const half = digits.length / 2;
-    const eVal = parseFloat(digits.substring(0, half)) * Math.pow(10, 5 - half);
-    const nVal = parseFloat(digits.substring(half)) * Math.pow(10, 5 - half);
-    const setIdx = (zone - 1) % 3;
-    const [eSet, nSet] = SETS_100K[setIdx];
-    const eIdx = eSet.indexOf(sqId[0]), nIdx = nSet.indexOf(sqId[1]);
-    if (eIdx === -1 || nIdx === -1) throw new Error("Neplatný štvoruholník");
-    let n100k = nIdx * 100000.0, minN = getMinN(band);
-    while (n100k < minN) n100k += 2000000.0;
-    return { e: (eIdx + 1) * 100000.0 + eVal, n: n100k + nVal };
-  }
-
-  function formatDielce(val) {
-    let d = Math.round(val) % 6000;
-    if (d < 0) d += 6000;
-    return `${String(Math.floor(d / 100)).padStart(2, '0')}-${String(d % 100).padStart(2, '0')} dc`;
-  }
-
-  function interpoluj(table, dist) {
-    if (!table || table.length === 0) return null;
-    if (dist <= table[0].vzd) return table[0];
-    if (dist >= table[table.length - 1].vzd) return table[table.length - 1];
-
-    let p1 = table[0], p2 = table[1];
-    for (let i = 0; i < table.length - 1; i++) {
-      if (dist >= table[i].vzd && dist <= table[i+1].vzd) {
-        p1 = table[i];
-        p2 = table[i+1];
-        break;
-      }
-    }
-
-    const t = (dist - p1.vzd) / (p2.vzd - p1.vzd);
-    return {
-      zam: p1.zam + t * (p2.zam - p1.zam),
-      opr: p1.opr + t * (p2.opr - p1.opr),
-      zmena: p1.zmena + t * (p2.zmena - p1.zmena),
-      cas: p1.cas + t * (p2.cas - p1.cas),
-      ypom: p1.ypom + t * (p2.ypom - p1.ypom),
-      vVrcholu: p1.vVrcholu + t * (p2.vVrcholu - p1.vVrcholu)
-    };
-  }
-
-  function vypocitaj() {
-    try {
-      const hs = parseInt(document.getElementById('hlavnySmer').value, 10);
-      const hzb = parseInt(document.getElementById('hzb').value, 10);
-      const m1 = document.getElementById('mgrsMoja').value.trim();
-      const m2 = document.getElementById('mgrsCiel').value.trim();
-      const vyskaPalpost = parseFloat(document.getElementById('vyskaPalpost').value) || 0;
-      const vyskaCiel = parseFloat(document.getElementById('vyskaCiel').value) || 0;
-
-      if (isNaN(hs) || isNaN(hzb)) throw new Error("Zadaj Hlavný smer aj HZB");
-      const p1 = mgrsToUtm(m1), p2 = mgrsToUtm(m2);
-      const dx = p2.e - p1.e, dy = p2.n - p1.n;
-      const dist = Math.round(Math.sqrt(dx * dx + dy * dy));
-      let deg = Math.atan2(dx, dy) * (180 / Math.PI);
-      if (deg < 0) deg += 360.0;
-      const smernik = deg * (6000.0 / 360.0);
-      const smRound = Math.round(smernik);
-
-      let napln = "";
-      const validNaplne = [];
-      for (const [k, tab] of Object.entries(BALISTICKE_TABULKY)) {
-        const minV = tab[0].vzd;
-        const maxV = tab[tab.length - 1].vzd;
-        if (dist >= minV && dist <= maxV) {
-          validNaplne.push({ name: k, tab: tab, diff: Math.abs((minV + maxV)/2 - dist) });
-        }
-      }
-
-      if (validNaplne.length > 0) {
-        validNaplne.sort((a, b) => a.diff - b.diff);
-        napln = validNaplne[0].name;
-      } else {
-        const fallbackMap = { "Náplň 1": 865.5, "Náplň 2": 1520.0, "Náplň 3": 2218.0, "Náplň 4": 2874.0, "Náplň 5": 3408.0, "Náplň 6": 3901.0, "Náplň D": 4719.0 };
-        let minD = Infinity;
-        for (const [k, v] of Object.entries(fallbackMap)) {
-          if (Math.abs(v - dist) < minD) { minD = Math.abs(v - dist); napln = k; }
-        }
-      }
-
-      let tabData = null;
-      if (BALISTICKE_TABULKY[napln]) {
-        tabData = interpoluj(BALISTICKE_TABULKY[napln], dist);
-      }
-
-      if (tabData) {
-        const prevysenie = vyskaCiel - vyskaPalpost;
-        const korekciaPrevysenia = (prevysenie / 10.0) * tabData.opr;
-        const upravenaDiaľkaZam = tabData.zam + korekciaPrevysenia;
-        let zam = (hs >= smRound) ? (upravenaDiaľkaZam - (hs - smRound)) : (upravenaDiaľkaZam + (smRound - hs));
-
-        document.getElementById('resSmernik').innerText = formatDielce(smernik);
-        document.getElementById('resVzdialenost').innerText = dist + " m";
-        document.getElementById('resNapln').innerText = napln;
-        document.getElementById('resZameriavac').innerText = formatDielce(zam);
-        document.getElementById('resDiaľkaZam').innerText = Math.round(upravenaDiaľkaZam * 10) / 10 + " dielcov";
-        document.getElementById('resDobaLetu').innerText = Math.round(tabData.cas * 10) / 10 + " s";
-        document.getElementById('resVyskaVrcholu').innerText = Math.round(vyskaPalpost + tabData.vVrcholu) + " m n.m.";
-      } else {
-        let zam = (hs >= smRound) ? (hzb - (hs - smRound)) : (hzb + (smRound - hs));
-        document.getElementById('resSmernik').innerText = formatDielce(smernik);
-        document.getElementById('resVzdialenost').innerText = dist + " m";
-        document.getElementById('resNapln').innerText = napln;
-        document.getElementById('resZameriavac').innerText = formatDielce(zam);
-        document.getElementById('resDiaľkaZam').innerText = "-";
-        document.getElementById('resDobaLetu').innerText = "-";
-        document.getElementById('resVyskaVrcholu').innerText = "-";
-      }
-
-    } catch (e) { alert(e.message); }
-  }
-</script>
-</body>
-</html>
+    "Nápl
