@@ -19,7 +19,6 @@
     .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #333; }
     .row:last-child { border-bottom: none; }
     
-    /* Úvodná obrazovka (Splash Screen) adaptívna pre celý displej */
     #splash {
       position: fixed;
       top: 0;
@@ -34,6 +33,7 @@
       transition: opacity 0.5s ease;
       box-sizing: border-box;
       padding: 20px;
+      cursor: pointer;
     }
     #splash img {
       max-width: 100%;
@@ -47,8 +47,8 @@
 </head>
 <body>
 
-  <!-- Úvodná obrazovka na 2 sekundy -->
-  <div id="splash">
+  <!-- Úvodná obrazovka: zmizne po 2s ALEBO ihneď po kliknutí na ňu -->
+  <div id="splash" onclick="skrySplash()">
     <img src="ikona.png" alt="Ikona">
   </div>
 
@@ -89,19 +89,25 @@
   </div>
 
 <script>
-  // Schovanie úvodnej obrazovky po 2 sekundách
+  function skrySplash() {
+    const splash = document.getElementById('splash');
+    if (splash) {
+      splash.style.opacity = '0';
+      setTimeout(() => splash.style.display = 'none', 500);
+    }
+  }
+
+  // Automatické skrytie po 2 sekundách
   window.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-      const splash = document.getElementById('splash');
-      if (splash) {
-        splash.style.opacity = '0';
-        setTimeout(() => splash.style.display = 'none', 500);
-      }
-    }, 2000);
+    setTimeout(skrySplash, 2000);
   });
 
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); });
+    window.addEventListener('load', () => { 
+      navigator.serviceWorker.register('sw.js').then(reg => {
+        reg.update(); // Vynúti kontrolu novej verzie Service Workera
+      }); 
+    });
   }
 
   // Balistické tabuľky vz. 97
