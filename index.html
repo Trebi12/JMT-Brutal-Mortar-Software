@@ -14,11 +14,13 @@
     .container { padding: 20px; max-width: 600px; margin: auto; }
     .card { background: #1e1e1e; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #333; }
     label { display: block; font-size: 0.9rem; color: #aaa; margin-top: 8px; }
-    input { width: 100%; padding: 10px; margin: 5px 0 10px 0; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 5px; box-sizing: border-box; }
+    input, select { width: 100%; padding: 10px; margin: 5px 0 10px 0; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 5px; box-sizing: border-box; font-size: 1rem; }
+    select { width: auto; min-width: 140px; padding: 6px 10px; margin: 0; font-weight: bold; }
     button { width: 100%; padding: 12px; background: #2196f3; color: #fff; border: none; border-radius: 5px; font-weight: bold; font-size: 1rem; cursor: pointer; }
     button:hover { background: #1976d2; }
-    .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #333; }
+    .row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #333; }
     .row:last-child { border-bottom: none; }
+    .hint { font-size: 0.8rem; color: #888; margin-top: 4px; }
 
     /* Úvodná obrazovka (Splash Screen) */
     #splash {
@@ -81,11 +83,23 @@
     <div class="card">
       <div class="row"><span>Smerník:</span><b id="resSmernik">-</b></div>
       <div class="row"><span>Vzdialenosť:</span><b id="resVzdialenost">-</b></div>
-      <div class="row"><span>Náplň:</span><b id="resNapln">-</b></div>
+      <div class="row">
+        <span>Náplň:</span>
+        <select id="selectNapln" onchange="prepocitajPodlaNaplne()">
+          <option value="Náplň 1">Náplň 1</option>
+          <option value="Náplň 2">Náplň 2</option>
+          <option value="Náplň 3">Náplň 3</option>
+          <option value="Náplň 4">Náplň 4</option>
+          <option value="Náplň 5">Náplň 5</option>
+          <option value="Náplň 6">Náplň 6</option>
+          <option value="Náplň D">Náplň D</option>
+        </select>
+      </div>
       <div class="row"><span>Zameriavač:</span><b id="resZameriavac">-</b></div>
       <div class="row"><span>Diaľka zameriavača:</span><b id="resDialkaZam">-</b></div>
       <div class="row"><span>Doba letu:</span><b id="resDobaLetu">-</b></div>
       <div class="row"><span>Výška vrcholu:</span><b id="resVyskaVrcholu">-</b></div>
+      <div id="rozsahInfo" class="hint"></div>
     </div>
   </div>
 
@@ -110,6 +124,10 @@
       navigator.serviceWorker.register('sw.js').catch(() => {});
     });
   }
+
+  // Uložené posledné hodnoty pre manuálnu zmenu náplne
+  let poslednaVzdialenost = null;
+  let poslednyDeltaH = 0;
 
   // Balistické tabuľky vz. 97
   const BALISTICKE_TABULKY = {
@@ -469,6 +487,31 @@
     };
   }
 
+  function prepocitajPodlaNaplne() {
+    if (poslednaVzdialenost === null) return;
+    const zvolenaNapln = document.getElementById('selectNapln').value;
+    const tab = BALISTICKE_TABULKY[zvolenaNapln];
+    if (!tab) return;
+
+    const minVzd = tab[0].vzd;
+    const maxVzd = tab[tab.length - 1].vzd;
+    const vysledky = interpoluj(tab, poslednaVzdialenost);
+
+    const oprava = poslednyDeltaH * vysledky.opr;
+    const konecnaDialkaZam = Math.round(vysledky.zam + oprava);
+
+    document.getElementById('resDialkaZam').innerText = konecnaDialkaZam + " diel.";
+    document.getElementById('resDobaLetu').innerText = vysledky.cas.toFixed(1) + " s";
+    document.getElementById('resVyskaVrcholu').innerText = Math.round(vysledky.vVrcholu) + " m";
+
+    const infoEl = document.getElementById('rozsahInfo');
+    if (poslednaVzdialenost < minVzd || poslednaVzdialenost > maxVzd) {
+      infoEl.innerText = `Pozor: vzdialenosť ${poslednaVzdialenost} m je mimo tabuľkový rozsah pre ${zvolenaNapln} (${minVzd}–${maxVzd} m), použité hraničné hodnoty.`;
+    } else {
+      infoEl.innerText = `Tabuľkový rozsah pre ${zvolenaNapln}: ${minVzd}–${maxVzd} m.`;
+    }
+  }
+
   function vypocitaj() {
     try {
       const hs = parseInt(document.getElementById('hlavnySmer').value, 10);
@@ -492,42 +535,37 @@
       while (zam < 0) zam += 6000;
       while (zam >= 6000) zam -= 6000;
 
-      // Výber náplne a interpolácia podľa vzdialenosti
+      // Automatický výber náplne podľa vzdialenosti
       const poradieNaplni = ["Náplň 1", "Náplň 2", "Náplň 3", "Náplň 4", "Náplň 5", "Náplň 6", "Náplň D"];
       let napln = "Náplň 1";
-      let vysledky = null;
+      let nasiel = false;
 
       for (const n of poradieNaplni) {
         const tab = BALISTICKE_TABULKY[n];
         if (dist >= tab[0].vzd && dist <= tab[tab.length - 1].vzd) {
           napln = n;
-          vysledky = interpoluj(tab, dist);
+          nasiel = true;
           break;
         }
       }
 
-      if (!vysledky) {
+      if (!nasiel) {
         if (dist < BALISTICKE_TABULKY["Náplň 1"][0].vzd) {
-          napln = "Náplň 1 (pod min. vzd.)";
-          vysledky = BALISTICKE_TABULKY["Náplň 1"][0];
+          napln = "Náplň 1";
         } else {
-          napln = "Náplň D (nad max. vzd.)";
-          vysledky = BALISTICKE_TABULKY["Náplň D"][BALISTICKE_TABULKY["Náplň D"].length - 1];
+          napln = "Náplň D";
         }
       }
 
-      // Výšková korekcia
-      const deltaH = vyskaCiel - vyskaPalpost;
-      const oprava = deltaH * vysledky.opr;
-      const konecnaDialkaZam = Math.round(vysledky.zam + oprava);
+      poslednaVzdialenost = dist;
+      poslednyDeltaH = vyskaCiel - vyskaPalpost;
 
       document.getElementById('resSmernik').innerText = formatDielce(smernik);
       document.getElementById('resVzdialenost').innerText = dist + " m";
-      document.getElementById('resNapln').innerText = napln;
+      document.getElementById('selectNapln').value = napln;
       document.getElementById('resZameriavac').innerText = formatDielce(zam);
-      document.getElementById('resDialkaZam').innerText = konecnaDialkaZam + " diel.";
-      document.getElementById('resDobaLetu').innerText = vysledky.cas.toFixed(1) + " s";
-      document.getElementById('resVyskaVrcholu').innerText = Math.round(vysledky.vVrcholu) + " m";
+
+      prepocitajPodlaNaplne();
     } catch (e) {
       alert(e.message);
     }
