@@ -17,7 +17,7 @@
     button { width: 100%; padding: 12px; background: #2196f3; color: #fff; border: none; border-radius: 5px; font-weight: bold; font-size: 1rem; cursor: pointer; }
     .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #333; }
     
-    /* Úvodná obrazovka (Splash Screen) adaptívna pre celý displej */
+    /* Úvodná obrazovka (Splash Screen) */
     #splash {
       position: fixed;
       top: 0;
@@ -30,17 +30,12 @@
       align-items: center;
       z-index: 9999;
       transition: opacity 0.5s ease;
-      box-sizing: border-box;
-      padding: 20px; /* Medzera od okrajov obrazovky */
     }
     #splash img {
-      max-width: 100%;
-      max-height: 100%;
-      width: auto;
-      height: auto;
-      object-fit: contain; /* Zabezpečí, že ikona bude maximálne veľká, ale celá viditeľná */
-      border-radius: 15px; /* Jemné zaoblenie pre lepší vzhľad */
-    }
+      width: 100vw;
+      height: 150vh;
+      object-fit: cover;
+      border-radius: 0;
     }
   </style>
 </head>
